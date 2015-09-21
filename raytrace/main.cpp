@@ -61,7 +61,7 @@ int main(int, char**){
                 image(row,col) = Colour(0,0,255);
        }
     }
-    cout << "Hello World" << endl;
+
     image.show();
     // image.save("output.png"); ///< Does not work on Windows!
 
