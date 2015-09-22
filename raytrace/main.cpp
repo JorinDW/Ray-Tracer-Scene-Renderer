@@ -45,31 +45,34 @@ int main(int, char**){
     
     MyImage image;
     
-    //create spheres
+    ///create spheres
     Sphere s1 = Sphere(0,0,1,5);
     cout << "Sphere details: "<< s1.getLocation().transpose() << endl;
     cout << s1.getRadius() << endl;
 
-    //define camera location
+    ///define camera location
     vec3 camera = vec3(0,0,-1);
 
+    ///define the origin
+    vec3 o = vec3(0,0,0);
+
+    ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
-            /// TODO: build primary rays
-            vec3 o = vec3(0,0,0);
+            ///create the pixel rays in 3d spaceß
+            ///create the view rays based on the pixel ray
+            ///determine if the view ray intersects with the sphere (for each shape, choose closest)
+                ///if it doesn't make it black
+                ///if it does
+                    ///create ambient light color
+                    ///create diffuse light
+                    ///create specular lights
             vec3 d = vec3(1,1,0).normalized();
             ray3 r(o,d);
-            
-//            /// EXAMPLE: using "image(row,col)"
-//            if(row>100 && row<200 && col>200 && col<500)
-//                image(row,col) = red();
-//            if(row>140 && row<240 && col>240 && col<340)
-//                image(row,col) = Colour(0,0,255);
        }
     }
-
     //image.show();
-    // image.save("output.png"); ///< Does not work on Windows!
+    //image.save("output.png"); ///< Does not work on Windows!
 
     return EXIT_SUCCESS;
 }
