@@ -1,5 +1,6 @@
 #include "icg_common.h"
 #include <Eigen/Geometry>
+#include "sphere.h"
 
 #ifndef WITH_OPENCV
     #error OpenCV required for this exercise
@@ -37,7 +38,6 @@ struct MyImage{
     }
 };
 
-
 int main(int, char**){
     /// Rays and vectors represented with Eigen
     typedef Eigen::Vector3f vec3;
@@ -45,24 +45,30 @@ int main(int, char**){
     
     MyImage image;
     
-    /// TODO: define camera position and sphere position here
+    //create spheres
+    Sphere s1 = Sphere(0,0,1,5);
+    cout << "Sphere details: "<< s1.getLocation().transpose() << endl;
+    cout << s1.getRadius() << endl;
+
+    //define camera location
+    vec3 camera = vec3(0,0,-1);
 
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
             /// TODO: build primary rays
-            // vec3 o = vec3(0,0,0);
-            // vec3 d = vec3(1,1,0).normalized();
-            // ray3 r(o,d);
+            vec3 o = vec3(0,0,0);
+            vec3 d = vec3(1,1,0).normalized();
+            ray3 r(o,d);
             
-            /// EXAMPLE: using "image(row,col)"
-            if(row>100 && row<200 && col>200 && col<500) 
-                image(row,col) = red();
-            if(row>140 && row<240 && col>240 && col<340) 
-                image(row,col) = Colour(0,0,255);
+//            /// EXAMPLE: using "image(row,col)"
+//            if(row>100 && row<200 && col>200 && col<500)
+//                image(row,col) = red();
+//            if(row>140 && row<240 && col>240 && col<340)
+//                image(row,col) = Colour(0,0,255);
        }
     }
 
-    image.show();
+    //image.show();
     // image.save("output.png"); ///< Does not work on Windows!
 
     return EXIT_SUCCESS;
