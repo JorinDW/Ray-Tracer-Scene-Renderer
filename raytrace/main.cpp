@@ -13,8 +13,8 @@ Colour black() { return Colour(0, 0, 0); }
 
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 640;
-    int rows = 640;
+    int cols = 40;
+    int rows = 40;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -59,7 +59,7 @@ int main(int, char**){
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
-            ///Create the Pixel Rays in 3D space
+            ///****Create the Pixel Rays in 3D space****
             ///Model of Pixels from Graphical World:
             ///The image plane in the 3D space is like a photograph in the real world, it has no segmentation, only a perfect representation of
             /// the world it comes from. When we want to view the rendered world, we have to take this image plane and segment it into
@@ -105,7 +105,26 @@ int main(int, char**){
                 cout<< "u : " << u << ",v : " << v << endl;
             }
 
-            ///create the view rays based on the pixel ray
+            ///****Create the View Ray Direction from (u,v)****
+            /// Now we are determining the direction of the view ray from the coordinates that we determined previously
+            /// The ray direction can be determined using the following equations
+            ///
+            ///     -dW + uU + vV
+            ///
+            /// , where:
+            /// - captials are vectors (and in this case they are the 3 directional vectors),
+            /// - d is the distance between the camera and the image plane (negative so that we are pointing out of the image back towards the scene)
+            /// - and (u,v) are the horizontal and vertical coordinate that we just determined
+            //distance to the image plane (from the -1 of the camera being -1 behind the image plane)
+            int d = 1;
+            //creating the ray direction
+            vec3 rayDirection = vec3 (-d,u,v);
+            //normalize the vector
+            rayDirection.normalized();
+
+            //cout << "Normalize rayDirection: " << rayDirection.transpose() << endl;
+
+
             ///determine if the view ray intersects with the sphere (for each shape, choose closest)
                 ///if it doesn't make it black
                 ///if it does
