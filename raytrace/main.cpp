@@ -121,8 +121,11 @@ int main(int, char**){
             vec3 rayDirection = vec3 (-d,u,v);
             //normalize the vector
             rayDirection.normalized();
-
+            ///note: The origin of this rayDirection vector is the view point denoted by the camera variable. We have this set to (0,0,-1)
             //cout << "Normalize rayDirection: " << rayDirection.transpose() << endl;
+
+            ///****Intersections of the rayDirection and each Shape in the Scene****
+            ///
 
 
             ///determine if the view ray intersects with the sphere (for each shape, choose closest)
