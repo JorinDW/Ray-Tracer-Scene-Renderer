@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jorinw/Documents/CSC305/raytrace/main.cpp
+icg_common.h
+/Users/jorinw/Documents/CSC305/raytrace/icg_common.h
+Eigen/Geometry
+-
+sphere.h
+/Users/jorinw/Documents/CSC305/raytrace/sphere.h
+
+/Users/jorinw/Documents/CSC305/raytrace/sphere.cpp
+sphere.h
+/Users/jorinw/Documents/CSC305/raytrace/sphere.h
+
+/Users/jorinw/Documents/CSC305/raytrace/sphere.h
+icg_common.h
+/Users/jorinw/Documents/CSC305/raytrace/icg_common.h
+
