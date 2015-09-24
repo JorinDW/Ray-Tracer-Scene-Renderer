@@ -7,10 +7,10 @@ class Sphere
 {
 private:
     vec3 _location = vec3(0,0,0);
-    int _radius = 1;
+    double _radius = 1;
 public:
     //constructor
-    Sphere(int u ,int v, int w, int r);
+    Sphere(int u ,int v, int w, double r);
 
     //destructor
     ~Sphere();
@@ -39,7 +39,7 @@ public:
     }
 
     //get radius
-    int getRadius(){
+    double getRadius(){
         return _radius;
     }
 };

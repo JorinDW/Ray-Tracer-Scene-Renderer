@@ -1,10 +1,11 @@
 #include "icg_common.h"
 #include <Eigen/Geometry>
 #include "sphere.h"
-
+#include "cmath"
 #ifndef WITH_OPENCV
     #error OpenCV required for this exercise
 #endif
+using namespace std;
 
 typedef cv::Vec3b Colour;
 Colour red() { return Colour(255, 0, 0); }
@@ -13,8 +14,8 @@ Colour black() { return Colour(0, 0, 0); }
 
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 40;
-    int rows = 40;
+    int cols = 200;
+    int rows = 200;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -38,6 +39,7 @@ struct MyImage{
     }
 };
 
+
 int main(int, char**){
     /// Rays and vectors represented with Eigen
     typedef Eigen::Vector3f vec3;
@@ -46,15 +48,18 @@ int main(int, char**){
     MyImage image;
     
     ///create spheres
-    Sphere s1 = Sphere(0,0,1,5);
+    Sphere s1 = Sphere(1,0,0,1.75);
     cout << "Sphere details: "<< s1.getLocation().transpose() << endl;
     cout << s1.getRadius() << endl;
 
     ///define camera location
-    vec3 camera = vec3(0,0,-1);
+    vec3 camera = vec3(-1,0,0);
 
     ///define the origin
     vec3 o = vec3(0,0,0);
+
+    //calculate e - c a single time since it is used many times
+    vec3 eToc = camera - s1.getLocation();
 
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
@@ -84,13 +89,13 @@ int main(int, char**){
             /// - and (nx,ny) as equal to get a square view point, and so that there aren't any scaling issues between length and width
             /// of the image plane and the number of pixels in the view. These are defined as image.col, image.row.
             //left side of image plane
-            int l = -1;
+            int l = -2;
             //right side of image plane
-            int r = 1;
+            int r = 2;
             //bottom of the image plane
-            int b = -1;
+            int b = -2;
             //top of the image plane
-            int t = 1;
+            int t = 2;
             //pixel horizontal iterator (because adding 0.5 to col directly causes an infinit loop)
             double i = col;
             //pixel vertical iterator (because adding 0.5 to row directly causes an infinit loop)
@@ -107,7 +112,7 @@ int main(int, char**){
 
             ///****Create the View Ray Direction from (u,v)****
             /// Now we are determining the direction of the view ray from the coordinates that we determined previously
-            /// The ray direction can be determined using the following equations
+            /// The ray direction can be determined using the following equation
             ///
             ///     -dW + uU + vV
             ///
@@ -117,15 +122,41 @@ int main(int, char**){
             /// - and (u,v) are the horizontal and vertical coordinate that we just determined
             //distance to the image plane (from the -1 of the camera being -1 behind the image plane)
             int d = 1;
-            //creating the ray direction
+            //creating the ray direction vector
             vec3 rayDirection = vec3 (-d,u,v);
             //normalize the vector
             rayDirection.normalized();
+            //create the ray from the camera position and the location of the point
+            ray3 pixelRay = ray3(camera,rayDirection);
             ///note: The origin of this rayDirection vector is the view point denoted by the camera variable. We have this set to (0,0,-1)
-            //cout << "Normalize rayDirection: " << rayDirection.transpose() << endl;
+            //cout << "\nNormalize rayDirection: " << rayDirection.transpose() << endl;
+            //cout << "Pixel ray: " << pixelRay << endl;
+
 
             ///****Intersections of the rayDirection and each Shape in the Scene****
+            ///We now need to determine what kinds of intersection our ray has. We can do this using the following formula:
             ///
+            ///     t = (-d.(e-c)+/-((d.(e-c))^2 - (d.d)((e-c).(e-c)-R^2))^0.5)/2
+            /// where,
+            /// - d is the rayDirection vector,
+            /// - e is the camera position vector,
+            /// - c is the sphere position vector,
+            /// - and R is the radius of the sphere.
+            ///
+            /// But, there is a condition that we can check before we do this whole computation. The determinat of this
+            /// quadratic equation can tell you the nature of the intersection. There are 3 possibilities:
+            /// - one: we miss the sphere and the determinat is negative
+            /// - two: we graze the sphere and the determinant is zero
+            /// - three: we pierce the sphere and the determinant is positive
+            // we calculate the determinant
+            double determinant = pow(((double)rayDirection.dot(eToc)),2) - (rayDirection.dot(rayDirection))*(eToc.dot(eToc) - pow((double)s1.getRadius(),2));
+            cout << "Determinant: " << determinant << endl;
+            if(determinant < 0){
+                image(row, col) = white();
+            }else{
+                image(row, col) = black();
+            }
+
 
 
             ///determine if the view ray intersects with the sphere (for each shape, choose closest)
@@ -139,7 +170,7 @@ int main(int, char**){
        }
     }
     cout<< "Done!" << endl;
-    //image.show();
+    image.show();
     //image.save("output.png"); ///< Does not work on Windows!
 
     return EXIT_SUCCESS;

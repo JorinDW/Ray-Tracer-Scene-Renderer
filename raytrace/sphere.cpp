@@ -1,6 +1,6 @@
 #include "sphere.h"
 
-Sphere::Sphere(int u, int v, int w, int r)
+Sphere::Sphere(int u, int v, int w, double r)
 {
     cout << "Sphere()"<< endl;
     _location = vec3(u,v,w);
