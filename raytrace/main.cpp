@@ -1,21 +1,24 @@
 #include "icg_common.h"
 #include <Eigen/Geometry>
 #include "sphere.h"
-#include "cmath"
+#include <cmath>
+#include <vector>
 #ifndef WITH_OPENCV
     #error OpenCV required for this exercise
 #endif
 using namespace std;
 
 typedef cv::Vec3b Colour;
-Colour red() { return Colour(255, 0, 0); }
+Colour red() { return Colour(0,0,255); }
 Colour white() { return Colour(255, 255, 255); }
 Colour black() { return Colour(0, 0, 0); }
+Colour blue() { return Colour(255,0,0); }
+Colour green() { return Colour(0,255,0); }
 
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 200;
-    int rows = 200;
+    int cols = 800;
+    int rows = 800;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -47,19 +50,22 @@ int main(int, char**){
     
     MyImage image;
     
-    ///create spheres
-    Sphere s1 = Sphere(1,0,0,1.75);
-    cout << "Sphere details: "<< s1.getLocation().transpose() << endl;
-    cout << s1.getRadius() << endl;
-
     ///define camera location
-    vec3 camera = vec3(-1,0,0);
+    vec3 camera = vec3(-10,0,0);
 
     ///define the origin
     vec3 o = vec3(0,0,0);
 
-    //calculate e - c a single time since it is used many times
-    vec3 eToc = camera - s1.getLocation();
+    ///create spheres
+    vector<Sphere> objects;
+    objects.push_back(Sphere(10,0,0,7,camera));
+    objects.push_back(Sphere(10,10,10,7,camera));
+    objects.push_back(Sphere(5,-3,-3,7,camera));
+    //cout << objects[1] << endl;
+
+    //Sphere s1 = Sphere(10,0,0,1.75,camera);
+
+    //vec3 eToc = camera - s1.getLocation();
 
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
@@ -89,13 +95,13 @@ int main(int, char**){
             /// - and (nx,ny) as equal to get a square view point, and so that there aren't any scaling issues between length and width
             /// of the image plane and the number of pixels in the view. These are defined as image.col, image.row.
             //left side of image plane
-            int l = -2;
+            int l = -10;
             //right side of image plane
-            int r = 2;
+            int r = 10;
             //bottom of the image plane
-            int b = -2;
+            int b = -10;
             //top of the image plane
-            int t = 2;
+            int t = 10;
             //pixel horizontal iterator (because adding 0.5 to col directly causes an infinit loop)
             double i = col;
             //pixel vertical iterator (because adding 0.5 to row directly causes an infinit loop)
@@ -121,14 +127,14 @@ int main(int, char**){
             /// - d is the distance between the camera and the image plane (negative so that we are pointing out of the image back towards the scene)
             /// - and (u,v) are the horizontal and vertical coordinate that we just determined
             //distance to the image plane (from the -1 of the camera being -1 behind the image plane)
-            int d = 1;
+            int d = 10;
             //creating the ray direction vector
             vec3 rayDirection = vec3 (-d,u,v);
             //normalize the vector
             rayDirection.normalized();
             //create the ray from the camera position and the location of the point
             ray3 pixelRay = ray3(camera,rayDirection);
-            ///note: The origin of this rayDirection vector is the view point denoted by the camera variable. We have this set to (0,0,-1)
+            ///note: The origin of this rayDirection vector is the view point denoted by the camera variable. We have this set to (-1,0,0)
             //cout << "\nNormalize rayDirection: " << rayDirection.transpose() << endl;
             //cout << "Pixel ray: " << pixelRay << endl;
 
@@ -149,15 +155,43 @@ int main(int, char**){
             /// - two: we graze the sphere and the determinant is zero
             /// - three: we pierce the sphere and the determinant is positive
             // we calculate the determinant
-            double determinant = pow(((double)rayDirection.dot(eToc)),2) - (rayDirection.dot(rayDirection))*(eToc.dot(eToc) - pow((double)s1.getRadius(),2));
-            cout << "Determinant: " << determinant << endl;
-            if(determinant < 0){
-                image(row, col) = white();
-            }else{
-                image(row, col) = black();
+//            double determinant = pow(((double)rayDirection.dot(s1.getEToC())),2) - (rayDirection.dot(rayDirection))*(s1.getEToC().dot(s1.getEToC()) - pow((double)s1.getRadius(),2));
+//            cout << "Determinant: " << determinant << endl;
+//            if(determinant < 0){
+//                image(row, col) = white();
+//            }else{
+//                image(row, col) = black();
+//            }
+
+            ///****Check all the objects for Intersections****
+            /// Because we would like for their to be more than one sphere in the object, and we need to check for the closest intersection
+            /// that occurs for a given ray, we will have to iterate over the objects individually and see if an intersection occurs.
+            /// note: The version above between the starred comments worked for a single object and didn't consider what what close and far away.
+
+            for(auto &i : objects){
+                double determinant = pow(((double)rayDirection.dot(i.getEToC())),2) - (rayDirection.dot(rayDirection))*(i.getEToC().dot(i.getEToC()) - pow((double)i.getRadius(),2));
+                //cout << "Determinant: " << determinant << endl;
+                if(determinant < 0){
+                    image(row, col) = white();
+                }else if(determinant == 0){
+                    double t = (-rayDirection.dot(i.getEToC()))/(rayDirection.dot(rayDirection));
+                    image(row, col) = red();
+                }
+                else{
+                    image(row, col) = red();
+                    double t1 = (-rayDirection.dot(i.getEToC()) + sqrt(determinant))/rayDirection.dot(rayDirection);
+                    double t2 = (-rayDirection.dot(i.getEToC()) - sqrt(determinant))/rayDirection.dot(rayDirection);
+                  //if(i.getRadius() == 1){
+//                        image(row, col) = red();
+//                    }
+//                    if(i.getRadius() == 2){
+//                        image(row, col) = blue();
+//                    }
+//                    else{
+//                        image(row, col) = green();
+//                    }
+                }
             }
-
-
 
             ///determine if the view ray intersects with the sphere (for each shape, choose closest)
                 ///if it doesn't make it black
@@ -175,3 +209,4 @@ int main(int, char**){
 
     return EXIT_SUCCESS;
 }
+
