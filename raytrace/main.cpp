@@ -10,15 +10,15 @@ using namespace std;
 
 typedef cv::Vec3b Colour;
 Colour red() { return Colour(0,0,255); }
-Colour white() { return Colour(255, 255, 255); }
-Colour black() { return Colour(0, 0, 0); }
+Colour white() { return Colour(255,255,255); }
+Colour black() { return Colour(0,0,0); }
 Colour blue() { return Colour(255,0,0); }
 Colour green() { return Colour(0,255,0); }
-
+Colour beige() { return Colour(204,255,255); }
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 800;
-    int rows = 800;
+    int cols = 1000;
+    int rows = 1000;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -50,22 +50,17 @@ int main(int, char**){
     
     MyImage image;
     
-    ///define camera location
-    vec3 camera = vec3(-10,0,0);
+    ///define camera location (change this and you must change d)
+    vec3 camera = vec3(10,0,0);
 
     ///define the origin
     vec3 o = vec3(0,0,0);
 
     ///create spheres
     vector<Sphere> objects;
-    objects.push_back(Sphere(10,0,0,7,camera));
-    objects.push_back(Sphere(10,10,10,7,camera));
-    objects.push_back(Sphere(5,-3,-3,7,camera));
-    //cout << objects[1] << endl;
-
-    //Sphere s1 = Sphere(10,0,0,1.75,camera);
-
-    //vec3 eToc = camera - s1.getLocation();
+    objects.push_back(Sphere(-34,0,0,4,camera,red()));
+    objects.push_back(Sphere(-30,0,4,4,camera,black()));
+    objects.push_back(Sphere(-25,5,5,2,camera,beige()));
 
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
@@ -95,13 +90,13 @@ int main(int, char**){
             /// - and (nx,ny) as equal to get a square view point, and so that there aren't any scaling issues between length and width
             /// of the image plane and the number of pixels in the view. These are defined as image.col, image.row.
             //left side of image plane
-            int l = -10;
+            int l = -5;
             //right side of image plane
-            int r = 10;
+            int r = 5;
             //bottom of the image plane
-            int b = -10;
+            int b = -5;
             //top of the image plane
-            int t = 10;
+            int t = 5;
             //pixel horizontal iterator (because adding 0.5 to col directly causes an infinit loop)
             double i = col;
             //pixel vertical iterator (because adding 0.5 to row directly causes an infinit loop)
@@ -112,9 +107,9 @@ int main(int, char**){
             double v = b + ((r - l)*(j + 0.5))/image.rows;
             ///We now have the corrdinates of the pixel's position on the image plane w.r.t the origin (since we placed the origin at the center
             /// of the image plane.)
-            if(row < 1){
-                cout<< "u : " << u << ",v : " << v << endl;
-            }
+//            if(row < 1){
+//                cout<< "u : " << u << ",v : " << v << endl;
+//            }
 
             ///****Create the View Ray Direction from (u,v)****
             /// Now we are determining the direction of the view ray from the coordinates that we determined previously
@@ -167,29 +162,30 @@ int main(int, char**){
             /// Because we would like for their to be more than one sphere in the object, and we need to check for the closest intersection
             /// that occurs for a given ray, we will have to iterate over the objects individually and see if an intersection occurs.
             /// note: The version above between the starred comments worked for a single object and didn't consider what what close and far away.
-
+            //closest t
+            double closest = 99999;
             for(auto &i : objects){
                 double determinant = pow(((double)rayDirection.dot(i.getEToC())),2) - (rayDirection.dot(rayDirection))*(i.getEToC().dot(i.getEToC()) - pow((double)i.getRadius(),2));
-                //cout << "Determinant: " << determinant << endl;
-                if(determinant < 0){
-                    image(row, col) = white();
+                //if the determinan missed, then do nothing
+                //or, if the vector from the camera to the center of the sphere has a negative w value (w,u,v), then do nothing.
+                if(determinant < 0 || i.getEToC()(0) < 0 ){
+                    //do nothing
                 }else if(determinant == 0){
                     double t = (-rayDirection.dot(i.getEToC()))/(rayDirection.dot(rayDirection));
-                    image(row, col) = red();
+                    if(t < closest && t > 0){
+                        image(row, col) = i.getColour();
+                        closest = abs(t);
+                        cout << t << endl;
+                    }
                 }
                 else{
-                    image(row, col) = red();
                     double t1 = (-rayDirection.dot(i.getEToC()) + sqrt(determinant))/rayDirection.dot(rayDirection);
                     double t2 = (-rayDirection.dot(i.getEToC()) - sqrt(determinant))/rayDirection.dot(rayDirection);
-                  //if(i.getRadius() == 1){
-//                        image(row, col) = red();
-//                    }
-//                    if(i.getRadius() == 2){
-//                        image(row, col) = blue();
-//                    }
-//                    else{
-//                        image(row, col) = green();
-//                    }
+                    //cout << i.getEToC().transpose() << endl;
+                    if(min(t1,t2) < closest){
+                        image(row, col) = i.getColour();
+                        closest = abs(min(t1,t2));
+                    }
                 }
             }
 

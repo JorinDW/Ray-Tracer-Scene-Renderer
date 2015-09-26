@@ -1,12 +1,13 @@
 #include "sphere.h"
 
-Sphere::Sphere(int u, int v, int w, double r, vec3 camera)
+Sphere::Sphere(int u, int v, int w, double r, vec3 camera, Colour colour)
 //Sphere::Sphere(int u, int v, int w, double r)
 {
     cout << "Sphere()"<< endl;
     _location = vec3(u,v,w);
     _radius = r;
     _eToc = camera - _location;
+    _colour = colour;
     //cout << _eToc << endl;
 }
 
