@@ -183,7 +183,7 @@ int main(int, char**){
                     closest = test;
                 }
                 counter ++;
-
+                                
 
 
 //                double determinant = pow(((double)rayDirection.dot(i->getEToC())),2) - (rayDirection.dot(rayDirection))*(i->getEToC().dot(i->getEToC()) - pow((double)i->getRadius(),2));

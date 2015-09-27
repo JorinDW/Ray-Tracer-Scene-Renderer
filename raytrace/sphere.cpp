@@ -6,12 +6,12 @@
 #include <cmath>
 #include <vector>
 typedef cv::Vec3b Colour;
-Sphere::Sphere(vec3 location, double r, vec3 camera, Colour colour)
+Sphere::Sphere(vec3 location, double radius, vec3 camera, Colour colour)
 //Sphere::Sphere(int u, int v, int w, double r)
 {
     cout << "Sphere()"<< endl;
     _location = location;
-    _radius = r;
+    _radius = radius;
     _eToc = camera - _location;
     _colour = colour;
     //cout << _eToc << endl;
@@ -50,17 +50,23 @@ Colour Sphere::getColour(){
 /// if > 0, then there is a double intersection with the sphere.
 double Sphere::intersection(vec3 ray){
     //the sphere is behind the camera
+    //cout<<"ray: " << ray.transpose() << endl;
+    //cout<<"etoc: " << _eToc(0)<<endl;
     if(_eToc(0) < 0){
         return -1;
     }
-    double determinant = pow((double)ray.dot(_eToc),2) - (ray.dot(ray))*(_eToc.dot(_eToc) - pow((double)_radius,2));
+    double determinant = pow(((double)ray.dot(_eToc)),2) - (ray.dot(ray))*(_eToc.dot(_eToc) - pow((double)_radius,2));
     //if the determinant missed, then do nothing
     if(determinant < 0){
         return -1; //
     }else if(determinant == 0){ //tangent connection
-        return abs((double)(-ray.dot(_eToc))/(ray.dot(ray)));
+        return ((-ray.dot(_eToc))/(ray.dot(ray)));
+        //cout<< "tangent"<< endl;
     }
     else{ //pierced the sphere
-        return abs(min((double)(-ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray),(double)(-ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray)));
+        double t1 = (-ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);
+        double t2 = (-ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray);
+        return abs(min(t1,t2));
+        //
     }
 }

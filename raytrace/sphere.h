@@ -10,7 +10,7 @@ private:
     vec3 _location = vec3(0,0,0);
     double _radius = 1;
     vec3 _eToc = vec3(0,0,0);
-    Colour _colour = Colour(0,0,0);
+    Colour _colour;
     vec3 _ray = vec3(0,0,0);
 public:
     //constructor

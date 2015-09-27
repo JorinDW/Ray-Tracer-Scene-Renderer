@@ -13,7 +13,7 @@ private:
     vec3 _normal = vec3(0,0,0);
     vec3 _camera = vec3(0,0,0);
 public:
-    Plane(vec3 location, vec3 normal, vec3 camera);
+    Plane(vec3 location, vec3 normal, vec3 camera, Colour colour);
 
     ~Plane();
 

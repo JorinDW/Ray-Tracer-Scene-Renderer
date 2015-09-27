@@ -1,10 +1,12 @@
 #include "plane.h"
 typedef cv::Vec3b Colour;
-Plane::Plane(vec3 location, vec3 normal, vec3 camera)
+Plane::Plane(vec3 location, vec3 normal, vec3 camera, Colour colour)
 {
     _location = location;
     _normal = normal;
     _camera = camera;
+    _eToc = _camera - location;
+    _colour = colour;
 }
 
 Plane::~Plane(){
@@ -24,6 +26,6 @@ Colour Plane::getColour(){
 }
 
 double Plane::intersection(vec3 ray){
-    double l = 0.0;
+    double l = 1000.0;
     return l;
 }
