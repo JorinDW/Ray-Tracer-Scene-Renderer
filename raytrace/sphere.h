@@ -2,8 +2,8 @@
 #define SPHERE_H
 #include "icg_common.h"
 #include <Eigen/Geometry>
-
-class Sphere
+#include "shape.h"
+class Sphere: public Shape
 {
     typedef cv::Vec3b Colour;
 private:
@@ -11,9 +11,10 @@ private:
     double _radius = 1;
     vec3 _eToc = vec3(0,0,0);
     Colour _colour = Colour(0,0,0);
+    vec3 _ray = vec3(0,0,0);
 public:
     //constructor
-    Sphere(int u ,int v, int w, double r, vec3 camera, Colour color);
+    Sphere(vec3 location, double r, vec3 camera, Colour color);
     //Sphere(int u ,int v, int w, double r);
     //destructor
     ~Sphere();
@@ -26,7 +27,13 @@ public:
         _location = newLocation;
         return;
     }
+    virtual vec3 getEToC() override;
 
+    virtual double getRadius() override;
+
+    virtual Colour getColour() override;
+
+    virtual double intersection(vec3 ray) override;
     //get location
     vec3 getLocation(){
         return _location;
@@ -38,21 +45,12 @@ public:
         return;
     }
 
-    //get radius
-    double getRadius(){
-        return _radius;
-    }
-
     //set eToc
     void setEToC(vec3 newEToC){
         _eToc = newEToC;
         return;
     }
 
-    //get eToc
-    vec3 getEToC(){
-        return _eToc;
-    }
 
     //set colour
     void setColour(Colour colour){
@@ -60,15 +58,7 @@ public:
         return;
     }
 
-    //get colour
-    Colour getColour(){
-        return _colour;
-    }
 
-//    string toString(){
-//        string s = _location + " , " + _radius + " , " + _eToc + " , ";
-//        return s;
-//    }
 };
 
 #endif // SPHERE_H

@@ -1,6 +1,8 @@
 #include "icg_common.h"
 #include <Eigen/Geometry>
 #include "sphere.h"
+#include "shape.h"
+#include "plane.h"
 #include <cmath>
 #include <vector>
 #ifndef WITH_OPENCV
@@ -57,11 +59,15 @@ int main(int, char**){
     vec3 o = vec3(0,0,0);
 
     ///create spheres
-    vector<Sphere> objects;
-    objects.push_back(Sphere(-34,0,0,4,camera,red()));
-    objects.push_back(Sphere(-30,0,4,4,camera,black()));
-    objects.push_back(Sphere(-25,5,5,2,camera,beige()));
-
+    vector<Shape*> objects;
+    Sphere s1 = Sphere(vec3(-34,0,0),4,camera,red());
+    objects.push_back(&s1);
+    Sphere s2 = Sphere(vec3(-30,0,4),4,camera,black());
+    objects.push_back(&s2);
+    Sphere s3 = Sphere(vec3(-25,5,5),2,camera,beige());
+    objects.push_back(&s3);
+    Plane p1  = Plane(vec3(0,0,-5),vec3(0,0,1),camera);
+    objects.push_back(&p1);
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
@@ -165,28 +171,35 @@ int main(int, char**){
             //closest t
             double closest = 99999;
             for(auto &i : objects){
-                double determinant = pow(((double)rayDirection.dot(i.getEToC())),2) - (rayDirection.dot(rayDirection))*(i.getEToC().dot(i.getEToC()) - pow((double)i.getRadius(),2));
-                //if the determinan missed, then do nothing
-                //or, if the vector from the camera to the center of the sphere has a negative w value (w,u,v), then do nothing.
-                if(determinant < 0 || i.getEToC()(0) < 0 ){
-                    //do nothing
-                }else if(determinant == 0){
-                    double t = (-rayDirection.dot(i.getEToC()))/(rayDirection.dot(rayDirection));
-                    if(t < closest && t > 0){
-                        image(row, col) = i.getColour();
-                        closest = abs(t);
-                        cout << t << endl;
-                    }
+                double test  = i->intersection(rayDirection);
+                cout << test << endl;
+                if(test < closest){
+                    image(row,col) = i->getColour();
+                }else{
+                    image(row,col) = black();
                 }
-                else{
-                    double t1 = (-rayDirection.dot(i.getEToC()) + sqrt(determinant))/rayDirection.dot(rayDirection);
-                    double t2 = (-rayDirection.dot(i.getEToC()) - sqrt(determinant))/rayDirection.dot(rayDirection);
-                    //cout << i.getEToC().transpose() << endl;
-                    if(min(t1,t2) < closest){
-                        image(row, col) = i.getColour();
-                        closest = abs(min(t1,t2));
-                    }
-                }
+//                double determinant = pow(((double)rayDirection.dot(i->getEToC())),2) - (rayDirection.dot(rayDirection))*(i->getEToC().dot(i->getEToC()) - pow((double)i->getRadius(),2));
+//                //if the determinan missed, then do nothing
+//                //or, if the vector from the camera to the center of the sphere has a negative w value (w,u,v), then do nothing.
+//                if(determinant < 0 || i->getEToC()(0) < 0 ){
+//                    //do nothing
+//                }else if(determinant == 0){
+//                    double t = (-rayDirection.dot(i->getEToC()))/(rayDirection.dot(rayDirection));
+//                    if(t < closest && t > 0){
+//                        image(row, col) = i->getColour();
+//                        closest = abs(t);
+//                        cout << t << endl;
+//                    }
+//                }
+//                else{
+//                    double t1 = (-rayDirection.dot(i->getEToC()) + sqrt(determinant))/rayDirection.dot(rayDirection);
+//                    double t2 = (-rayDirection.dot(i->getEToC()) - sqrt(determinant))/rayDirection.dot(rayDirection);
+//                    //cout << i.getEToC().transpose() << endl;
+//                    if(min(t1,t2) < closest){
+//                        image(row, col) = i->getColour();
+//                        closest = abs(min(t1,t2));
+//                    }
+//                }
             }
 
             ///determine if the view ray intersects with the sphere (for each shape, choose closest)
