@@ -26,6 +26,14 @@ Colour Plane::getColour(){
 }
 
 double Plane::intersection(vec3 ray){
-    double l = 1000.0;
-    return l;
+    double test = -1;
+    double denominator = ray.dot(_normal);
+    double numerator = (_camera - _location).dot(_normal);
+    if(denominator == 0 || numerator == 0){
+        return test;
+    } else {
+        test = - numerator/denominator;
+        return test;
+    }
+    cout<<"what?"<<endl;
 }

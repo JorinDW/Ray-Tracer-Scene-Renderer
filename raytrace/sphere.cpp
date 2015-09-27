@@ -50,8 +50,6 @@ Colour Sphere::getColour(){
 /// if > 0, then there is a double intersection with the sphere.
 double Sphere::intersection(vec3 ray){
     //the sphere is behind the camera
-    //cout<<"ray: " << ray.transpose() << endl;
-    //cout<<"etoc: " << _eToc(0)<<endl;
     if(_eToc(0) < 0){
         return -1;
     }
@@ -61,7 +59,6 @@ double Sphere::intersection(vec3 ray){
         return -1; //
     }else if(determinant == 0){ //tangent connection
         return ((-ray.dot(_eToc))/(ray.dot(ray)));
-        //cout<< "tangent"<< endl;
     }
     else{ //pierced the sphere
         double t1 = (-ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);

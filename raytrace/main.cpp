@@ -19,8 +19,8 @@ Colour green() { return Colour(0,255,0); }
 Colour beige() { return Colour(204,255,255); }
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 400;
-    int rows = 400;
+    int cols = 1000;
+    int rows = 1000;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -62,12 +62,18 @@ int main(int, char**){
     vector<Shape*> objects;
     Sphere s1 = Sphere(vec3(-34,0,0),4,camera,red());
     objects.push_back(&s1);
+    Sphere s2 = Sphere(vec3(-30,0,4),4,camera,black());
+    objects.push_back(&s2);
     Sphere s3 = Sphere(vec3(-25,5,5),2,camera,beige());
     objects.push_back(&s3);
-    Plane p1  = Plane(vec3(0,0,-5),vec3(0,0,1),camera, blue());
-    Sphere s2 = Sphere(vec3(-30,0,4),4,camera,white());
-    objects.push_back(&s2);
+    Plane p1  = Plane(vec3(0,0,5),vec3(0,0,1),camera, blue());
     objects.push_back(&p1);
+    Plane p2 = Plane(vec3(0,0,10), vec3(0,0,1), camera, green());
+    objects.push_back((&p2));
+    Plane p3  = Plane(vec3(0,6,0),vec3(0,1,0),camera, black());
+    objects.push_back(&p3);
+    Plane p4 = Plane(vec3(9,0,0), vec3(0,1,0), camera, green());
+    objects.push_back((&p4));
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
@@ -173,16 +179,13 @@ int main(int, char**){
             int counter = 0;
             for(auto &i : objects){
                 double test  = i->intersection(rayDirection);
-                //cout << test << endl;
-                //if(closest != 9999){cout << "closest: " << closest<< "  : " << counter << endl;}
                 if(test < 0){
-                    //image(row,col) = black();
+                    //do nothing
                 }else if(test < closest){
-                    //cout << counter<< "test: " << test << " closest: " << closest << " color: " << i->getColour()<< endl;
                     image(row,col) = i->getColour();
                     closest = test;
                 }
-                counter ++;
+
 
 
 
