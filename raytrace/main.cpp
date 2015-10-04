@@ -219,10 +219,10 @@ int main(int, char**){
                 //calculate the light at the point
                 //Colour pixelColour = hitShape->getRefl()*(ambientInt*hitShape->getColour() + lightColour*lightIntensity*std::max((float)0.0,normal.dot(lightVector)));
                 //the diffuse light
-                Colour diffuseLight = Colour(255,255,255);
+                Colour diffuseLight = Colour(150,150,150);
                 //do precalculations
                 double specular = (normal*(normal.dot(lightVector)) - lightVector).dot(rayDirection);
-                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 0.2*(lightVector.dot(normal))*(diffuseLight) + 0.01*pow((double)specular,2)*diffuseLight;
+                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 1.0*(lightVector.dot(normal))*(diffuseLight) + 1.0*pow((double)specular,20)*diffuseLight;
                 //set the pixel colour
                 image(row,col) = pixelColour;
             } else {
