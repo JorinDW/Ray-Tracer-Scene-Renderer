@@ -70,9 +70,9 @@ int main(int, char**){
     objects.push_back(&s2);
     Sphere s3 = Sphere(vec3(-15, 5, 0),1,camera,yellow(),0.4);
     objects.push_back(&s3);
-    Plane p1  = Plane(vec3(-1,1,-4),vec3(0,0,-1),camera, blue(),0.8);
+    Plane p1  = Plane(vec3(-1,1,-4),vec3(0,0,-1),camera, blue(),0.3);
     objects.push_back(&p1);
-    Plane p2 = Plane(vec3(-1,1,4), vec3(0,0,1),camera, green(),0.7);
+    Plane p2 = Plane(vec3(-1,1,4), vec3(0,0,1),camera, green(),0.3);
     objects.push_back((&p2));
 //    Plane p3  = Plane(vec3(0,6,0),vec3(0,1,0),camera, black());
 //    objects.push_back(&p3);
@@ -90,6 +90,7 @@ int main(int, char**){
     double ambientInt = 0.35;
     //create light colour
     Colour lightColour = Colour(255,255,255);
+
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
@@ -219,7 +220,9 @@ int main(int, char**){
                 //Colour pixelColour = hitShape->getRefl()*(ambientInt*hitShape->getColour() + lightColour*lightIntensity*std::max((float)0.0,normal.dot(lightVector)));
                 //the diffuse light
                 Colour diffuseLight = Colour(255,255,255);
-                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 0.9*(lightVector.dot(normal))*(diffuseLight);
+                //do precalculations
+                double specular = (normal*(normal.dot(lightVector)) - lightVector).dot(rayDirection);
+                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 0.2*(lightVector.dot(normal))*(diffuseLight) + 0.01*pow((double)specular,2)*diffuseLight;
                 //set the pixel colour
                 image(row,col) = pixelColour;
             } else {
