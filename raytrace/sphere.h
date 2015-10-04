@@ -12,9 +12,10 @@ private:
     vec3 _eToc = vec3(0,0,0);
     Colour _colour;
     vec3 _ray = vec3(0,0,0);
+    double _refl = 0;
 public:
     //constructor
-    Sphere(vec3 location, double r, vec3 camera, Colour color);
+    Sphere(vec3 location, double r, vec3 camera, Colour color, double refl);
     //Sphere(int u ,int v, int w, double r);
     //destructor
     ~Sphere();
@@ -34,7 +35,11 @@ public:
     virtual Colour getColour() override;
 
     virtual double intersection(vec3 ray) override;
-    //get location
+
+    virtual vec3 getNormal(vec3 intersection) override;
+
+    virtual double getRefl() override;
+
     vec3 getLocation(){
         return _location;
     }

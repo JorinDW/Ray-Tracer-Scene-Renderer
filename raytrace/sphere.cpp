@@ -6,7 +6,7 @@
 #include <cmath>
 #include <vector>
 typedef cv::Vec3b Colour;
-Sphere::Sphere(vec3 location, double radius, vec3 camera, Colour colour)
+Sphere::Sphere(vec3 location, double radius, vec3 camera, Colour colour,double refl)
 //Sphere::Sphere(int u, int v, int w, double r)
 {
     cout << "Sphere()"<< endl;
@@ -14,6 +14,7 @@ Sphere::Sphere(vec3 location, double radius, vec3 camera, Colour colour)
     _radius = radius;
     _eToc = camera - _location;
     _colour = colour;
+    _refl = refl;
     //cout << _eToc << endl;
 }
 
@@ -44,6 +45,15 @@ Colour Sphere::getColour(){
     return _colour;
 }
 
+//get normal
+vec3 Sphere::getNormal(vec3 intersection){
+    return _location - intersection;
+}
+
+double Sphere::getRefl(){
+    return _refl;
+}
+
 ///takes in the ray from the pixel and checks if it is negative
 ///if not, then checks what the determinant is for the intersection
 /// if 0, tangent intersection has occured.
@@ -61,8 +71,8 @@ double Sphere::intersection(vec3 ray){
         return ((-ray.dot(_eToc))/(ray.dot(ray)));
     }
     else{ //pierced the sphere
-        double t1 = (-ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);
-        double t2 = (-ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray);
+        double t1 = (ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);
+        double t2 = (ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray);
         return abs(min(t1,t2));
         //
     }

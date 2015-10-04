@@ -16,11 +16,12 @@ Colour white() { return Colour(255,255,255); }
 Colour black() { return Colour(0,0,0); }
 Colour blue() { return Colour(255,0,0); }
 Colour green() { return Colour(0,255,0); }
-Colour beige() { return Colour(204,255,255); }
+Colour yellow() { return Colour(0,255,255); }
+Colour orange() { return Colour(0,140,255); }
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 1000;
-    int rows = 1000;
+    int cols = 500;
+    int rows = 500;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -58,22 +59,37 @@ int main(int, char**){
     ///define the origin
     vec3 o = vec3(0,0,0);
 
+    ///define the light source
+    vec3 lightSource = vec3(-25, 0, 2);
+
     ///create spheres
     vector<Shape*> objects;
-    Sphere s1 = Sphere(vec3(-34,0,0),4,camera,red());
+    Sphere s1 = Sphere(vec3(-25,12,0),4,camera,red(),0.4);
     objects.push_back(&s1);
-    Sphere s2 = Sphere(vec3(-30,0,4),4,camera,black());
+    Sphere s2 = Sphere(vec3(-20,-10,0),4,camera,orange(),0.4);
     objects.push_back(&s2);
-    Sphere s3 = Sphere(vec3(-25,5,5),2,camera,beige());
+    Sphere s3 = Sphere(vec3(-15, 5, 0),1,camera,yellow(),0.4);
     objects.push_back(&s3);
-    Plane p1  = Plane(vec3(0,0,5),vec3(0,0,1),camera, blue());
+    Plane p1  = Plane(vec3(-1,1,-4),vec3(0,0,-1),camera, blue(),0.8);
     objects.push_back(&p1);
-    Plane p2 = Plane(vec3(0,0,10), vec3(0,0,1), camera, green());
+    Plane p2 = Plane(vec3(-1,1,4), vec3(0,0,1),camera, green(),0.7);
     objects.push_back((&p2));
-    Plane p3  = Plane(vec3(0,6,0),vec3(0,1,0),camera, black());
-    objects.push_back(&p3);
-    Plane p4 = Plane(vec3(9,0,0), vec3(0,1,0), camera, green());
-    objects.push_back((&p4));
+//    Plane p3  = Plane(vec3(0,6,0),vec3(0,1,0),camera, black());
+//    objects.push_back(&p3);
+//    Plane p4 = Plane(vec3(-999,0,0), vec3(1,0,0), camera, beige());
+//    objects.push_back((&p4));
+    //halfway vector
+    //vec3 halfway = ((rayDirection + lightVector)/((rayDirection + lightVector).normalized()));
+    //create the light intensity cl
+    double lightIntensity = 1.0;
+    //create control value of light cp
+    double lightControl = 1.0;
+    //create the specular exponent p
+    double specularExp = 1.0;
+    //create ambient intensity
+    double ambientInt = 0.35;
+    //create light colour
+    Colour lightColour = Colour(255,255,255);
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
         for (int col = 0; col < image.cols; ++col) {
@@ -119,9 +135,7 @@ int main(int, char**){
             double v = b + ((r - l)*(j + 0.5))/image.rows;
             ///We now have the corrdinates of the pixel's position on the image plane w.r.t the origin (since we placed the origin at the center
             /// of the image plane.)
-//            if(row < 1){
-//                cout<< "u : " << u << ",v : " << v << endl;
-//            }
+
 
             ///****Create the View Ray Direction from (u,v)****
             /// Now we are determining the direction of the view ray from the coordinates that we determined previously
@@ -134,17 +148,14 @@ int main(int, char**){
             /// - d is the distance between the camera and the image plane (negative so that we are pointing out of the image back towards the scene)
             /// - and (u,v) are the horizontal and vertical coordinate that we just determined
             //distance to the image plane (from the -1 of the camera being -1 behind the image plane)
-            int d = 10;
+            int d = -10;
             //creating the ray direction vector
-            vec3 rayDirection = vec3 (-d,u,v);
+            vec3 rayDirection = vec3 (d,u,v);
             //normalize the vector
             rayDirection.normalized();
-            //create the ray from the camera position and the location of the point
-            //ray3 pixelRay = ray3(camera,rayDirection);
             ///note: The origin of this rayDirection vector is the view point denoted by the camera variable. We have this set to (-1,0,0)
-            //cout << "\nNormalize rayDirection: " << rayDirection.transpose() << endl;
-            //cout << "Pixel ray: " << pixelRay << endl;
-
+            //create the ray from the pixel position and the location of the point
+            ray3 pixelRay = ray3(camera,rayDirection);
 
             ///****Intersections of the rayDirection and each Shape in the Scene****
             ///We now need to determine what kinds of intersection our ray has. We can do this using the following formula:
@@ -161,65 +172,60 @@ int main(int, char**){
             /// - one: we miss the sphere and the determinat is negative
             /// - two: we graze the sphere and the determinant is zero
             /// - three: we pierce the sphere and the determinant is positive
-            // we calculate the determinant
-//            double determinant = pow(((double)rayDirection.dot(s1.getEToC())),2) - (rayDirection.dot(rayDirection))*(s1.getEToC().dot(s1.getEToC()) - pow((double)s1.getRadius(),2));
-//            cout << "Determinant: " << determinant << endl;
-//            if(determinant < 0){
-//                image(row, col) = white();
-//            }else{
-//                image(row, col) = black();
-//            }
-
-            ///****Check all the objects for Intersections****
             /// Because we would like for their to be more than one sphere in the object, and we need to check for the closest intersection
             /// that occurs for a given ray, we will have to iterate over the objects individually and see if an intersection occurs.
             /// note: The version above between the starred comments worked for a single object and didn't consider what what close and far away.
             //closest t
             double closest = 9999;
-            int counter = 0;
+            Shape* hitShape;
             for(auto &i : objects){
                 double test  = i->intersection(rayDirection);
                 if(test < 0){
                     //do nothing
                 }else if(test < closest){
-                    image(row,col) = i->getColour();
+                    //image(row,col) = i->getColour();
                     closest = test;
+                    hitShape = i;
                 }
-
-
-
-
-//                double determinant = pow(((double)rayDirection.dot(i->getEToC())),2) - (rayDirection.dot(rayDirection))*(i->getEToC().dot(i->getEToC()) - pow((double)i->getRadius(),2));
-//                //if the determinan missed, then do nothing
-//                //or, if the vector from the camera to the center of the sphere has a negative w value (w,u,v), then do nothing.
-//                if(determinant < 0 || i->getEToC()(0) < 0 ){
-//                    //do nothing
-//                }else if(determinant == 0){
-//                    double t = (-rayDirection.dot(i->getEToC()))/(rayDirection.dot(rayDirection));
-//                    if(t < closest && t > 0){
-//                        image(row, col) = i->getColour();
-//                        closest = abs(t);
-//                        cout << t << endl;
-//                    }
-//                }
-//                else{
-//                    double t1 = (-rayDirection.dot(i->getEToC()) + sqrt(determinant))/rayDirection.dot(rayDirection);
-//                    double t2 = (-rayDirection.dot(i->getEToC()) - sqrt(determinant))/rayDirection.dot(rayDirection);
-//                    //cout << i.getEToC().transpose() << endl;
-//                    if(min(t1,t2) < closest){
-//                        image(row, col) = i->getColour();
-//                        closest = abs(min(t1,t2));
-//                    }
-//                }
             }
 
 
-            ///determine if the view ray intersects with the sphere (for each shape, choose closest)
-                ///if it doesn't make it black
-                ///if it does
-                    ///create ambient light color
-                    ///create diffuse light
-                    ///create specular lights
+            ///****Ambient,Diffuse and Specular Lighting****
+            /// Here we now need to create a system for determining the color of pixels based on the obejcts they contain.
+            /// Doing this we will combine three different types of lighting, ambient, diffuse and specular.
+            /// We will split this process into ambient + diffuse, and seperately + specular.
+            /// The following equation show us how to calculate ambient and diffuse together
+            ///
+            ///     c = cr*(ca + cl*max(0,N.L)) + cl*cp*(H.N)^p
+            /// where,
+            /// c is the color that we show for the paritcualr pixel,
+            /// cr is the diffuse reflectance of the surface which determines how reflective the surface is,
+            /// cl is the intensity of the light,
+            /// N is the normal of the surface,
+            /// L is the vector of the light,
+            /// cp is a control value for light,
+            /// H is the unit vector halfway between the light and view vectors,
+            /// and p is an exponent that determines the size of the specular highlights
+            if(hitShape){
+                //cout<<"Here"<<endl;
+                //generates the point that the ray intersected the sphere or plane.
+                //used to determine the normal.
+                vec3 intersectionPoint = pixelRay.pointAt(closest);
+                //use hitShape.getLocation to get the second point to create the normal.
+                vec3 normal = (hitShape->getNormal(intersectionPoint));
+                //now generate the light vector
+                vec3 lightVector = (intersectionPoint - lightSource).normalized();
+                //calculate the light at the point
+                //Colour pixelColour = hitShape->getRefl()*(ambientInt*hitShape->getColour() + lightColour*lightIntensity*std::max((float)0.0,normal.dot(lightVector)));
+                //the diffuse light
+                Colour diffuseLight = Colour(255,255,255);
+                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 0.9*(lightVector.dot(normal))*(diffuseLight);
+                //set the pixel colour
+                image(row,col) = pixelColour;
+            } else {
+                image(row,col) = yellow();
+            }
+
             //vec3 d = vec3(1,1,0).normalized();
             //ray3 r(o,d);
        }

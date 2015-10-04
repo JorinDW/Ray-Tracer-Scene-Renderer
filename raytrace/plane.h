@@ -12,8 +12,9 @@ private:
     Colour _colour = Colour(0,0,0);
     vec3 _normal = vec3(0,0,0);
     vec3 _camera = vec3(0,0,0);
+    double _refl = 0;
 public:
-    Plane(vec3 location, vec3 normal, vec3 camera, Colour colour);
+    Plane(vec3 location, vec3 normal, vec3 camera, Colour colour, double refl);
 
     ~Plane();
 
@@ -24,6 +25,11 @@ public:
     virtual Colour getColour() override;
 
     virtual double intersection(vec3 ray) override;
+
+    virtual vec3 getNormal(vec3 intersection) override;
+
+    virtual double getRefl() override;
+
 };
 
 #endif // PLANE_H

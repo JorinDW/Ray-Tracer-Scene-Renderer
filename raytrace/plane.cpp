@@ -1,12 +1,14 @@
 #include "plane.h"
 typedef cv::Vec3b Colour;
-Plane::Plane(vec3 location, vec3 normal, vec3 camera, Colour colour)
+Plane::Plane(vec3 location, vec3 normal, vec3 camera, Colour colour, double refl)
 {
+    cout << "Plane()"<< endl;
     _location = location;
     _normal = normal;
     _camera = camera;
     _eToc = _camera - location;
     _colour = colour;
+    _refl = refl;
 }
 
 Plane::~Plane(){
@@ -23,6 +25,14 @@ double Plane::getRadius(){
 
 Colour Plane::getColour(){
     return _colour;
+}
+
+vec3 Plane::getNormal(vec3 intersection){
+    return _normal;
+}
+
+double Plane::getRefl(){
+    return _refl;
 }
 
 double Plane::intersection(vec3 ray){
