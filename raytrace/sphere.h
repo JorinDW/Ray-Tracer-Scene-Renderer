@@ -5,17 +5,16 @@
 #include "shape.h"
 class Sphere: public Shape
 {
-    typedef cv::Vec3b Colour;
 private:
     vec3 _location = vec3(0,0,0);
     double _radius = 1;
     vec3 _eToc = vec3(0,0,0);
-    Colour _colour;
+    cv::Vec3f _colour;
     vec3 _ray = vec3(0,0,0);
     double _refl = 0;
 public:
     //constructor
-    Sphere(vec3 location, double r, vec3 camera, Colour color, double refl);
+    Sphere(vec3 location, double r, vec3 camera, cv::Vec3f color, double refl);
     //Sphere(int u ,int v, int w, double r);
     //destructor
     ~Sphere();
@@ -32,7 +31,7 @@ public:
 
     virtual double getRadius() override;
 
-    virtual Colour getColour() override;
+    virtual cv::Vec3f getColour() override;
 
     virtual double intersection(vec3 ray) override;
 
@@ -58,7 +57,7 @@ public:
 
 
     //set colour
-    void setColour(Colour colour){
+    void setColour(cv::Vec3f colour){
         _colour = colour;
         return;
     }

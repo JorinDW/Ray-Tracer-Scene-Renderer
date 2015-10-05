@@ -1,6 +1,5 @@
 #include "plane.h"
-typedef cv::Vec3b Colour;
-Plane::Plane(vec3 location, vec3 normal, vec3 camera, Colour colour, double refl)
+Plane::Plane(vec3 location, vec3 normal, vec3 camera, cv::Vec3f colour, double refl)
 {
     cout << "Plane()"<< endl;
     _location = location;
@@ -23,7 +22,7 @@ double Plane::getRadius(){
     return d;
 }
 
-Colour Plane::getColour(){
+cv::Vec3f Plane::getColour(){
     return _colour;
 }
 

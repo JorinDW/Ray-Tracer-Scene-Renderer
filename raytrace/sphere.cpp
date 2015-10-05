@@ -5,8 +5,8 @@
 #include "plane.h"
 #include <cmath>
 #include <vector>
-typedef cv::Vec3b Colour;
-Sphere::Sphere(vec3 location, double radius, vec3 camera, Colour colour,double refl)
+
+Sphere::Sphere(vec3 location, double radius, vec3 camera, cv::Vec3f colour, double refl)
 //Sphere::Sphere(int u, int v, int w, double r)
 {
     cout << "Sphere()"<< endl;
@@ -41,13 +41,13 @@ vec3 Sphere::getEToC(){
 }
 
 //get colour
-Colour Sphere::getColour(){
+cv::Vec3f Sphere::getColour(){
     return _colour;
 }
 
 //get normal
 vec3 Sphere::getNormal(vec3 intersection){
-    return _location - intersection;
+    return intersection - _location;
 }
 
 double Sphere::getRefl(){

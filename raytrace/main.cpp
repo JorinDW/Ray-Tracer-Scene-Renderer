@@ -64,15 +64,15 @@ int main(int, char**){
 
     ///create spheres
     vector<Shape*> objects;
-    Sphere s1 = Sphere(vec3(-25,12,0),4,camera,red(),0.4);
+    Sphere s1 = Sphere(vec3(-25,12,0),4,camera,cv::Vec3f(1,0.5,0.5),0.4);
     objects.push_back(&s1);
-    Sphere s2 = Sphere(vec3(-20,-10,0),4,camera,orange(),0.4);
+    Sphere s2 = Sphere(vec3(-20,-10,0),4,camera,cv::Vec3f(0,1,0),0.4);
     objects.push_back(&s2);
-    Sphere s3 = Sphere(vec3(-15, 5, 0),1,camera,yellow(),0.4);
+    Sphere s3 = Sphere(vec3(-15, 5, 0),1,camera,cv::Vec3f(0,0,1),0.4);
     objects.push_back(&s3);
-    Plane p1  = Plane(vec3(-1,1,-4),vec3(0,0,-1),camera, blue(),0.3);
+    Plane p1  = Plane(vec3(-1,1,-4),vec3(0,0,-1),camera, cv::Vec3f(0.5,0.5,0.5),0.3);
     objects.push_back(&p1);
-    Plane p2 = Plane(vec3(-1,1,4), vec3(0,0,1),camera, green(),0.3);
+    Plane p2 = Plane(vec3(-1,1,4), vec3(0,0,1),camera, cv::Vec3f(1,1,1),0.3);
     objects.push_back((&p2));
 //    Plane p3  = Plane(vec3(0,6,0),vec3(0,1,0),camera, black());
 //    objects.push_back(&p3);
@@ -89,7 +89,7 @@ int main(int, char**){
     //create ambient intensity
     double ambientInt = 0.35;
     //create light colour
-    Colour lightColour = Colour(255,255,255);
+    Colour whiteLight = Colour(255,255,255);
 
     ///pixel iteration
     for (int row = 0; row < image.rows; ++row) {
@@ -215,14 +215,15 @@ int main(int, char**){
                 //use hitShape.getLocation to get the second point to create the normal.
                 vec3 normal = (hitShape->getNormal(intersectionPoint));
                 //now generate the light vector
-                vec3 lightVector = (intersectionPoint - lightSource).normalized();
+                vec3 lightVector = (lightSource - intersectionPoint).normalized();
                 //calculate the light at the point
                 //Colour pixelColour = hitShape->getRefl()*(ambientInt*hitShape->getColour() + lightColour*lightIntensity*std::max((float)0.0,normal.dot(lightVector)));
                 //the diffuse light
-                Colour diffuseLight = Colour(150,150,150);
+                cv::Vec3f diffuseLight = cv::Vec3f(1,1,1);
                 //do precalculations
-                double specular = (normal*(normal.dot(lightVector)) - lightVector).dot(rayDirection);
-                Colour pixelColour = hitShape->getColour()*hitShape->getRefl() + 1.0*(lightVector.dot(normal))*(diffuseLight) + 1.0*pow((double)specular,20)*diffuseLight;
+                vec3 specular = 2*(normal*(normal.dot(lightVector)) - lightVector);
+                Colour ambient = whiteLight.mul(hitShape->getColour());
+                Colour pixelColour = ambient;// + whiteLight.mul((lightVector.dot(normal))*(diffuseLight));// + 1.0*pow(max(0.0f,(float)specular.dot((intersectionPoint-camera))),20)*diffuseLight;
                 //set the pixel colour
                 image(row,col) = pixelColour;
             } else {
