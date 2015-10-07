@@ -72,7 +72,7 @@ double Sphere::intersection(vec3 ray){
     }
     else{ //pierced the sphere
         double t1 = (ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);
-        double t2 = (ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray);
+        double t2 = abs((ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray));
         return abs(min(t1,t2));
         //
     }

@@ -44,5 +44,5 @@ double Plane::intersection(vec3 ray){
         test = - numerator/denominator;
         return test;
     }
-    cout<<"what?"<<endl;
+    //cout<<"what?"<<endl;
 }
