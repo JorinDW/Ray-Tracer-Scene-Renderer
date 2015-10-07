@@ -39,7 +39,7 @@ double Plane::intersection(vec3 ray){
     double denominator = ray.dot(_normal);
     double numerator = (_camera - _location).dot(_normal);
     if(denominator == 0 || numerator == 0){
-        return test;
+        return -3;
     } else {
         test = - numerator/denominator;
         return test;

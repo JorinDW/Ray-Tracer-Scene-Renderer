@@ -66,7 +66,7 @@ double Sphere::intersection(vec3 ray){
     double determinant = pow(((double)ray.dot(_eToc)),2) - (ray.dot(ray))*(_eToc.dot(_eToc) - pow((double)_radius,2));
     //if the determinant missed, then do nothing
     if(determinant < 0){
-        return -1; //
+        return -2; //
     }else if(determinant == 0){ //tangent connection
         return ((-ray.dot(_eToc))/(ray.dot(ray)));
     }
