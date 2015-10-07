@@ -34,10 +34,11 @@ double Plane::getRefl(){
     return _refl;
 }
 
-double Plane::intersection(vec3 ray){
+double Plane::intersection(vec3 ray, vec3 origin){
+    vec3 viewPointtoCenter = origin - _location;
     double test = -1;
     double denominator = ray.dot(_normal);
-    double numerator = (_camera - _location).dot(_normal);
+    double numerator = (viewPointtoCenter).dot(_normal);
     if(denominator == 0 || numerator == 0){
         return -3;
     } else {

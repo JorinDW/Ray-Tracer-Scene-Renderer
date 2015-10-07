@@ -68,8 +68,10 @@ int main(int, char**){
     objects.push_back(&s1);
     Sphere s2 = Sphere(vec3(-20,-7,0),3,camera,cv::Vec3f(0,1,0),0.4);
     objects.push_back(&s2);
-    Sphere s3 = Sphere(vec3(-35, 3, 0),1,camera,cv::Vec3f(0,0,1),0.4);
+    Sphere s3 = Sphere(vec3(-35, 1, 0),1,camera,cv::Vec3f(0,0,1),0.4);
     objects.push_back(&s3);
+    Sphere s4 = Sphere(vec3(-37,7,0),5,camera,cv::Vec3f(1,0.3,0.3),0.4);
+    objects.push_back(&s4);
     Plane p1  = Plane(vec3(-1,1,4),vec3(0,0,-1),camera, cv::Vec3f(0.5,0.5,0.5),0.3);
     objects.push_back(&p1);
     Plane p2 = Plane(vec3(-1,-12,4), vec3(0,1,0),camera, cv::Vec3f(0.5,0.5,0.5),0.3);
@@ -183,7 +185,7 @@ int main(int, char**){
             float closest = 99999;
             Shape* hitShape;
             for(auto &k : objects){
-                double test  = k->intersection(rayDirection);
+                double test  = k->intersection(rayDirection, camera);
                 if(test < 0){
                     //cout<< "We missed"<< endl;
                     //do nothing
@@ -223,16 +225,22 @@ int main(int, char**){
                 //use hitShape.getNormal to get the second point to create the normal.
                 vec3 normal = (hitShape->getNormal(intersectionPoint)).normalized();
                 //now generate the light vector
-                vec3 lightVector = (lightSource - intersectionPoint).normalized();
+                vec3 lightVector = (lightSource - intersectionPoint);
+                //get the length of the light vector
+                double distance = lightVector.norm();
+
+                lightVector = lightVector.normalized();
                 //calculate the light at the point starting with whether or not it is shadowed
                 bool shadowed = false;
                 //go through each object
                 for(auto &j : objects){
                     for(auto &p : objects){
+                        //check that the current object isn't a valid intersection
                         if(p != j){
-                            double test  = p->intersection(lightVector);
-                            if(test > 0.001){
+                            double test  = p->intersection(lightVector,intersectionPoint);
+                            if(test > 0.01 && test < distance){ //make sure that intersections beyond the light source are not valid
                                 shadowed = true;
+                                break; //if one intersection occurs, then break since it is definitely shadowed.
                             }
                         }
                     }

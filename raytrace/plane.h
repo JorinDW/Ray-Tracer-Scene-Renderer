@@ -23,7 +23,7 @@ public:
 
     virtual cv::Vec3f getColour() override;
 
-    virtual double intersection(vec3 ray) override;
+    virtual double intersection(vec3 ray, vec3 origin) override;
 
     virtual vec3 getNormal(vec3 intersection) override;
 

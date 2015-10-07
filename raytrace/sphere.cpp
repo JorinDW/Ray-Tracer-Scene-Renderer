@@ -58,21 +58,22 @@ double Sphere::getRefl(){
 ///if not, then checks what the determinant is for the intersection
 /// if 0, tangent intersection has occured.
 /// if > 0, then there is a double intersection with the sphere.
-double Sphere::intersection(vec3 ray){
+double Sphere::intersection(vec3 ray, vec3 origin){
     //the sphere is behind the camera
     if(_eToc(0) < 0){
         return -1;
     }
-    double determinant = pow(((double)ray.dot(_eToc)),2) - (ray.dot(ray))*(_eToc.dot(_eToc) - pow((double)_radius,2));
+    vec3 viewPointtoCenter = origin - _location;
+    double determinant = pow(((double)ray.dot(viewPointtoCenter)),2) - (ray.dot(ray))*(viewPointtoCenter.dot(viewPointtoCenter) - pow((double)_radius,2));
     //if the determinant missed, then do nothing
     if(determinant < 0){
         return -2; //
     }else if(determinant == 0){ //tangent connection
-        return ((-ray.dot(_eToc))/(ray.dot(ray)));
+        return ((-ray.dot(viewPointtoCenter))/(ray.dot(ray)));
     }
     else{ //pierced the sphere
-        double t1 = (ray.dot(_eToc) + sqrt(determinant))/ray.dot(ray);
-        double t2 = abs((ray.dot(_eToc) - sqrt(determinant))/ray.dot(ray));
+        double t1 = (ray.dot(viewPointtoCenter) + sqrt(determinant))/ray.dot(ray);
+        double t2 = abs((ray.dot(viewPointtoCenter) - sqrt(determinant))/ray.dot(ray));
         return abs(min(t1,t2));
         //
     }

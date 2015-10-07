@@ -9,7 +9,7 @@ public:
     virtual vec3 getEToC() = 0;
     virtual double getRadius() = 0;
     virtual cv::Vec3f getColour() = 0;
-    virtual double intersection(vec3 ray) = 0;
+    virtual double intersection(vec3 ray, vec3 origin) = 0;
     virtual vec3 getNormal(vec3 intersection) = 0;
     virtual double getRefl() = 0;
 };
