@@ -20,8 +20,8 @@ Colour yellow() { return Colour(0,255,255); }
 Colour orange() { return Colour(0,140,255); }
 struct MyImage{
     /// Data (not private for convenience)
-    int cols = 500;
-    int rows = 500;
+    int cols = 1000;
+    int rows = 1000;
     ///  Channel with [0..255] range image (aka uchar)
     cv::Mat image = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(255,255,255));
 
@@ -59,7 +59,7 @@ int main(int, char**){
     vec3 o = vec3(0,0,0);
 
     vector<vec3*> lights;
-    ///define the light source
+    ///define the light sources
     vec3 lightSource = vec3(-30, 0, 2);
     lights.push_back(&lightSource);
     vec3 lightSource2 = vec3(-30, 2, 2);
@@ -88,14 +88,7 @@ int main(int, char**){
 //    objects.push_back((&p4));
 //    Plane p5 = Plane(vec3(-1,1,-4), vec3(0,0,1), camera, cv::Vec3f(0.34,0.98,0.14),0.3);
 //    objects.push_back((&p5));
-    //create the light intensity cl
-//    double lightIntensity = 1.0;
-//    //create control value of light cp
-//    double lightControl = 1.0;
-//    //create the specular exponent p
-//    double specularExp = 1.0;
-//    //create ambient intensity
-//    double ambientInt = 0.35;
+
     //create light colour
     Colour whiteLight = Colour(255,255,255);
 
@@ -185,25 +178,24 @@ int main(int, char**){
             /// Because we would like for their to be more than one sphere in the object, and we need to check for the closest intersection
             /// that occurs for a given ray, we will have to iterate over the objects individually and see if an intersection occurs.
             /// note: The version above between the starred comments worked for a single object and didn't consider what what close and far away.
-            //closest t
+            //default the pixel colour to black
             Colour pixelColour = black();
+            //use a float for closest
             float closest = 99999;
+            //pointer to the shape we have hit with the ray
             Shape* hitShape;
+            //got through all the objects and check whether or not they intersect
             for(auto &k : objects){
+                //return the intersection distance
                 double test  = k->intersection(rayDirection, camera);
+                //if the returned value is less than zero we have missed or failed
                 if(test < 0){
-                    //cout<< "We missed"<< endl;
                     //do nothing
-                    //hitShape = NULL;
-                }else if(test < closest){
-                    //image(row,col) = i->getColour();
+                }else if(test < closest){ //if the test value is less than the tracked closest value set closest to test and track the object with hitShape
                     closest = test;
                     hitShape = k;
                 }
             }
-//            if(closest == 9999){
-//                pixelColour =
-//            }
 
             ///****Ambient,Diffuse and Specular Lighting****
             /// Here we now need to create a system for determining the color of pixels based on the obejcts they contain.
@@ -249,6 +241,7 @@ int main(int, char**){
                         for(auto &p : objects){
                             //check that the current object is a valid intersection (not intersection with itself)
                             if(p != j){
+                                //use the same function as physical intersection to check the lightVector intersection
                                 double test  = p->intersection(lightVector,intersectionPoint);
                                 if(test > 0.01 && test < distance){ //make sure that intersections beyond the light source are not valid
                                     shadowed = true;
@@ -257,31 +250,32 @@ int main(int, char**){
                             }
                         }
                     }
-                    //calculate the normailzed reflection vector
-                    vec3 reflection = (2*((lightVector.dot(normal))*normal) - lightVector).normalized();
-                    //calculate the normalized view vector
-                    vec3 viewVector = (camera- intersectionPoint).normalized();
                     //create the ambient light
                     Colour ambient = (hitShape->getColour()).mul(whiteLight);
-                    //create the diffues light
-                    Colour diffuse = (lightVector.dot(normal))*(whiteLight);
-                    //create the reflection value
-                    double reflectionAndView = pow(max(0.0f,reflection.dot(viewVector)),120);
-                    //initialize the specular colour
-                    Colour specular = Colour(0,0,0);
-                    //check if the reflection is above 0, if it is then validate it
-                    if(reflectionAndView > 0){
-                        specular = reflectionAndView*whiteLight ;
-                    }
                     //if shadowed then the only type of lighting should be the ambient lighting.
                     if(shadowed){
                         // because we are iterating over all light points to create an area light we divide by the number of lights.
                         pixelColour = pixelColour + (0.5*ambient/numOfLights);
                     }else{ //otherwise the color for the pixel will include all the three different types of light
-                        pixelColour = pixelColour + ((0.5*ambient + 0.5*diffuse + 0.7*specular)/numOfLights);// + whiteLight.mul((lightVector.dot(normal))*(diffuseLight));// + 1.0*pow(max(0.0f,(float)specular.dot((intersectionPoint-camera))),20)*diffuseLight;
+                        //calculate the normailzed reflection vector
+                        vec3 reflection = (2*((lightVector.dot(normal))*normal) - lightVector).normalized();
+                        //calculate the normalized view vector
+                        vec3 viewVector = (camera- intersectionPoint).normalized();
+                        //create the diffues light
+                        Colour diffuse = (lightVector.dot(normal))*(whiteLight);
+                        //create the reflection value
+                        double reflectionAndView = pow(max(0.0f,reflection.dot(viewVector)),120);
+                        //initialize the specular colour
+                        Colour specular = Colour(0,0,0);
+                        //check if the reflection is above 0, if it is then validate it
+                        if(reflectionAndView > 0){
+                            specular = reflectionAndView*whiteLight ;
+                        }
+                        //for each light add a fraction of the light for each element of the area light
+                        pixelColour = pixelColour + ((0.5*ambient + 0.5*diffuse + 0.7*specular)/numOfLights);
                     }
                 }
-                //set the pixel color
+                //set the pixel color if there is an intersection
                 image(row,col) = pixelColour;
             } else { //if there is not intersection, the pixel is coloured black
                 image(row,col) = pixelColour;
