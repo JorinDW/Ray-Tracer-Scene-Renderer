@@ -8,7 +8,7 @@ private:
     GLuint _pid; ///< GLSL shader program ID 
     GLuint _vbo; ///< memory buffer
 public:
-    void init(){
+    virtual void init(std::vector<vec3> vpoint) override{
         ///--- Compile the shaders
         _pid = opengp::load_shaders("Triangle/vshader.glsl", "Triangle/fshader.glsl");
         if(!_pid) exit(EXIT_FAILURE);       
@@ -19,12 +19,9 @@ public:
         glBindVertexArray(_vao);
      
         ///--- Vertex Buffer
-        const GLfloat vpoint[] = { /*V1*/-1.0f, -1.0f, 0.0f, 
-                                   /*V2*/ 1.0f, -1.0f, 0.0f, 
-                                   /*V3*/ 0.0f,  1.0f, 0.0f};
         glGenBuffers(1, &_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vpoint), vpoint, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vec3)*vpoint.size(), &vpoint[0], GL_STATIC_DRAW);
     
         ///--- vpoint shader attribute
         GLuint position = glGetAttribLocation(_pid, "vpoint"); ///< Fetch Attribute ID for Vertex Positions
@@ -36,7 +33,7 @@ public:
         glUseProgram(0);
     }
        
-    void cleanup(){
+    virtual void cleanup() override{
         glBindVertexArray(0);
         glUseProgram(0);
         glDeleteBuffers(1, &_vbo);
@@ -44,20 +41,9 @@ public:
         glDeleteVertexArrays(1, &_vao);
     }
         
-    void draw(){
+    virtual void draw() override{
         glUseProgram(_pid);
         glBindVertexArray(_vao);       
-            ///--- Set transformation uniform
-            /// @see http://eigen.tuxfamily.org/dox/classEigen_1_1AngleAxis.html#details
-            
-            mat4 T = Eigen::Affine3f(Eigen::Translation3f(.5,.5,0)).matrix();
-            mat4 R = Eigen::Affine3f(Eigen::AngleAxisf(M_PI/6.0, vec3::UnitZ())).matrix();
-            mat4 S = mat4::Identity();
-            S(0,0) = .25;
-            S(1,1) = .25;
-            mat4 M = T*S*R;            
-            GLuint M_id = glGetUniformLocation(_pid, "M");
-            glUniformMatrix4fv(M_id, 1, GL_FALSE, M.data());
             ///--- Draw
             glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);        

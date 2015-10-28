@@ -11,7 +11,11 @@ void init(){
     glClearColor(/*gray*/ .937,.937,.937, /*solid*/1.0 );
     /// create a quad for the background image to be on
     /// pass in the size of the desired quad (full screen)
-    background.init();
+//    const GLfloat backPoint[] = { /*V1*/ -1.0f, -1.0f, 0.0f,
+//                               /*V2*/ +1.0f, -1.0f, 0.0f,
+//                               /*V3*/ -1.0f, +1.0f, 0.0f,
+//                               /*V4*/ +1.0f, +1.0f, 0.0f };
+//    background.init(backPoint);
     /// create the bats that will be flying around the scene
     bat.init();
 }

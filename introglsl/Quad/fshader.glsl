@@ -9,7 +9,7 @@ const vec3 COLORS[2] = vec3[](
 
 void main() {
     color = texture(tex,uv).rgb;
-    // color = COLORS[gl_PrimitiveID];
+    //rcolor = COLORS[gl_PrimitiveID];
 }
 
 
