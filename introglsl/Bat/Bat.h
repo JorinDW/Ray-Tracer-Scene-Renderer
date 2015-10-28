@@ -56,7 +56,20 @@ public:
         }
     }
     
-    void draw(const mat4& M){
+    void draw(mat4& M){
+        float time = glfwGetTime();
+
+        ///Perform bat transformations using bat_M to track changes
+        //float freq = M_PI*time*10;
+        //bat_M *= Eigen::Affine3f(Eigen::Translation3f(0.0, 0.0, 0.0)).matrix();
+    //    Transform sun_M = Transform::Identity();
+    //    sun_M *= Eigen::Translation3f(0.2, 0.0, 0.0);
+    //    sun_M *= Eigen::AngleAxisf(-freq/SUN_ROT_PERIOD, Eigen::Vector3f::UnitZ());
+    //    //scale_t: make the sun become bigger and smaller over the time!
+        float scale_t = abs(std::sin(time));
+        M *= Eigen::Affine3f(Eigen::AlignedScaling3f(0.2 +scale_t, 0.2 +scale_t, 1.0)).matrix();
+
+
         ///Call the Quad Draw functions
         for(auto &k : bodyParts){
             k->draw(M);

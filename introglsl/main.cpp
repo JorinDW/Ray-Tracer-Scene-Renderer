@@ -23,19 +23,8 @@ void init(){
 void display(){
     mat4 bat_M = mat4::Identity();
     glClear(GL_COLOR_BUFFER_BIT);
-    float time = glfwGetTime();
 
-    ///Perform bat transformations using bat_M to track changes
-    float freq = M_PI*time*1;
-
-    //bat_M *= Eigen::Affine3f(Eigen::Translation3f(0.0, 0.0, 0.0)).matrix();
-//    Transform sun_M = Transform::Identity();
-//    sun_M *= Eigen::Translation3f(0.2, 0.0, 0.0);
-//    sun_M *= Eigen::AngleAxisf(-freq/SUN_ROT_PERIOD, Eigen::Vector3f::UnitZ());
-//    //scale_t: make the sun become bigger and smaller over the time!
-    float scale_t = 0.01*std::sin(freq);
-    bat_M *= Eigen::Affine3f(Eigen::AlignedScaling3f(0.2 +scale_t, 0.2 +scale_t, 1.0)).matrix();
-
+    /// Perform whole bat transformations here
 
     bat.draw(bat_M);
     //background.draw();
