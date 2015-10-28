@@ -20,7 +20,7 @@ mat4 R(float degrees){
 
 void main() {
     // gl_Position = S(.5) * R(10) * vec4(vpoint, 1.0);
-    gl_Position = S(.5) * R(2*3.14*time) * vec4(vpoint, 1.0);
-    
+    gl_Position = S(.1) * R(2*3.14*time) * vec4(vpoint, 1.0);
+    //gl_Position = S(.1) * vec4(vpoint, 1.0);
     uv = vtexcoord;
 }

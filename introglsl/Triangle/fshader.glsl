@@ -1,7 +1,13 @@
 #version 330 core
-in vec3 fcolor; ///< passed by vshader
-out vec3 color; ///< output color
+out vec3 color;
+
+in vec2 uv;
+uniform sampler2D tex;
+const vec3 COLORS[2] = vec3[](
+    vec3(1.0,0.0,0.0),
+    vec3(0.0,1.0,0.0));
 
 void main() {
-    color = fcolor; /// fcolor is interpolated!
+    color = texture(tex,uv).rgb;
+    //rcolor = COLORS[gl_PrimitiveID];
 }

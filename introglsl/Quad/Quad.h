@@ -5,7 +5,7 @@ class Quad: public Shape{
 private:
     GLuint _vao; ///< vertex array object
     GLuint _pid; ///< GLSL shader program ID 
-    GLuint _vbo_vpoint; ///< memory buffer
+    GLuint _vbo; ///< memory buffer
 public:
     virtual void init(std::vector<vec3> vpoint) override{
         ///--- Compile the shaders
@@ -20,8 +20,8 @@ public:
         ///--- Vertex coordinates
         {
             ///--- Buffer
-            glGenBuffers(1, &_vbo_vpoint);
-            glBindBuffer(GL_ARRAY_BUFFER, _vbo_vpoint);
+            glGenBuffers(1, &_vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, _vbo);
             glBufferData(GL_ARRAY_BUFFER, sizeof(Vec3)*vpoint.size(), &vpoint[0], GL_STATIC_DRAW);
         
             ///--- Attribute
@@ -38,7 +38,7 @@ public:
     virtual void cleanup() override{
         glBindVertexArray(0);
         glUseProgram(0);
-        glDeleteBuffers(1, &_vbo_vpoint);
+        glDeleteBuffers(1, &_vbo);
         glDeleteProgram(_pid);
         glDeleteVertexArrays(1, &_vao);
     }
