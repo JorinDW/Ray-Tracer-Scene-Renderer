@@ -43,12 +43,17 @@ public:
         glDeleteVertexArrays(1, &_vao);
     }
 
-    virtual void draw() override{
+    virtual void draw(const mat4& M) override{
         glUseProgram(_pid);
         glBindVertexArray(_vao);
             ///--- Uniform for animation
             float t = glfwGetTime();
             glUniform1f(glGetUniformLocation(_pid, "time"), t);
+
+            ///--- Upload transformation
+            GLuint M_id = glGetUniformLocation(_pid, "M");
+            glUniformMatrix4fv(M_id, ONE, DONT_TRANSPOSE, M.data());
+
             ///--- Draw
             glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);

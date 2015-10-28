@@ -6,7 +6,7 @@ class Shape
 {
 public:
     Shape();
-    virtual void draw() = 0;
+    virtual void draw(const mat4& M) = 0;
     virtual void cleanup() = 0;
     virtual void init(std::vector<vec3> vpoint) = 0;
 };

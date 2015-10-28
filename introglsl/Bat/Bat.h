@@ -11,10 +11,10 @@ private:
     Triangle leftWing;
     Triangle rightWing;
     vector<Shape*> bodyParts;
+    vector<Shape*> wings;
 public:
     void init(){
         /// Initialize the body parts with the generic bat coords.
-        ///
         std::vector<vec3> bodyPoints;
         bodyPoints.push_back(vec3(/*V1*/ -1.0f, 1.0f, 0.0f));
         bodyPoints.push_back(vec3(/*V2*/ 1.0f, 1.0f, 0.0f));
@@ -45,12 +45,8 @@ public:
         /// Generate a generic bat by pushing Quads and Triangles as Shapes into a vector
         bodyParts.push_back(&batHead);
         bodyParts.push_back(&batBody);
-        bodyParts.push_back(&leftWing);
-        bodyParts.push_back(&rightWing);
-//        ///go through each shape and initialize it
-//        for(auto &k: bodyParts){
-//            k->init();
-//        }
+        wings.push_back(&leftWing);
+        wings.push_back(&rightWing);
     }
        
     void cleanup(){
@@ -60,10 +56,15 @@ public:
         }
     }
     
-    void draw(){
-        ///Call the Quad and Triangle Draw functions
+    void draw(const mat4& M){
+        ///Call the Quad Draw functions
         for(auto &k : bodyParts){
-            k->draw();
+            k->draw(M);
+        }
+
+        ///Call the Triangle Draw functions
+        for(auto &j : wings){
+            j->draw(M);
         }
     }
 };
