@@ -1,7 +1,8 @@
 #pragma once
 #include "icg_common.h"
+#include "../Shape/Shape.h"
 
-class Triangle{
+class Triangle: public Shape{
 private:
     GLuint _vao; ///< vertex array object
     GLuint _pid; ///< GLSL shader program ID 

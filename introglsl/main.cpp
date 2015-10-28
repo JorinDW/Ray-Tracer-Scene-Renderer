@@ -1,31 +1,34 @@
 #include "icg_common.h"
 
-#include "Triangle/Triangle.h"
+#include "Bat/Bat.h"
 #include "Quad/Quad.h"
-Triangle triangle;
-Quad quad;
+
+Bat bat;
+Quad background;
 
 void init(){
-    ///--- Sets background color
+    /// sets background color
     glClearColor(/*gray*/ .937,.937,.937, /*solid*/1.0 );
-    
-    triangle.init();
-    quad.init();
+    /// create a quad for the background image to be on
+    /// pass in the size of the desired quad (full screen)
+    background.init();
+    /// create the bats that will be flying around the scene
+    bat.init();
 }
 
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
-    triangle.draw();
-    quad.draw();
+    bat.draw();
+    background.draw();
 }
 
 int main(int, char**){
-    glfwInitWindowSize(512, 512);
-    glfwCreateWindow("introglsl");
+    glfwInitWindowSize(700, 700);
+    glfwCreateWindow("Scary Scene");
     glfwDisplayFunc(display);
     init();
     glfwMainLoop();
-    triangle.cleanup();
-    quad.cleanup();
+    bat.cleanup();
+    background.cleanup();
     return EXIT_SUCCESS;
 }
