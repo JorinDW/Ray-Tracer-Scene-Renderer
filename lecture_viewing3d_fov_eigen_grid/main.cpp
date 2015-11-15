@@ -15,7 +15,7 @@ void init(){
 }
 
 void display(){
-    opengp::update_title_fps("Intro. to Computer Graphics");   
+    opengp::update_title_fps("3D World");
     glViewport(0,0,window_width,window_height);    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     

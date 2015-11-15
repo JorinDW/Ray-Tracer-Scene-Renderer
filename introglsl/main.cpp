@@ -15,7 +15,7 @@ void init(){
 
 void display(){
     glClear(GL_COLOR_BUFFER_BIT);
-    triangle.draw();
+    //triangle.draw();
     quad.draw();
 }
 
