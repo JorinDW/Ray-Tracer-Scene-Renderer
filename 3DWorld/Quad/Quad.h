@@ -31,17 +31,28 @@ public:
         ///--- Vertex Buffer Object creation
         /// We first generate the vertex buffer
         /// Then bind that buffer to _vbo
+        /// Then inject the data in a given format in glBufferData
+        /// Then check errors
         glGenBuffers(1, &_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vpoint), vpoint, GL_STATIC_DRAW);
-        
+        glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(GLfloat), vpoint, GL_STATIC_DRAW);
+        check_error_gl();
+
+        ///--- Index buffer population
+        std::vector<unsigned int> indices;
+        /// iterate through the indice locations
+        indices.push_back(0);
+        indices.push_back(1);
+        indices.push_back(2);
+        indices.push_back(3);
+
         ///--- Index Buffer Object creation
         /// We first generate
         ///--- Frees all bindings and programs
-        glBindVertexArray(0);
+        //glBindVertexArray(0);
 
         ///--- Compile the shaders
-        _pid = opengp::load_shaders("_mesh/Mesh_vshader.glsl", "_mesh/Mesh_fshader.glsl");
+        _pid = opengp::load_shaders("Quad/vshader.glsl", "Quad/fshader.glsl");
         if(!_pid) exit(EXIT_FAILURE);
         glUseProgram(_pid);
     }
@@ -87,7 +98,7 @@ private:
 
         ///--- Vertex Attribute ID for Positions
         GLint vpoint_id = glGetAttribLocation(_pid, "vpoint");
-        /// check that the
+        /// check that the0.
         if (vpoint_id >= 0) {
             glEnableVertexAttribArray(vpoint_id);
             check_error_gl();
@@ -102,9 +113,6 @@ private:
         GLint vpoint_id = glGetAttribLocation(_pid, "vpoint");
         if (vpoint_id >= 0)
             glDisableVertexAttribArray(vpoint_id);
-        GLint vnormal_id = glGetAttribLocation(_pid, "vnormal");
-        if (vnormal_id >= 0)
-            glDisableVertexAttribArray(vnormal_id);
         glUseProgram(0);
         glBindVertexArray(0);
     }
