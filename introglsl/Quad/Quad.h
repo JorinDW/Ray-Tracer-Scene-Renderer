@@ -8,6 +8,7 @@ private:
     GLuint _vbo_vpoint; ///< memory buffer
     GLuint _vbo_vtexcoord; ///< memory buffer
     GLuint _tex; ///< Texture ID
+
 public:
     void init(){
         ///--- Compile the shaders

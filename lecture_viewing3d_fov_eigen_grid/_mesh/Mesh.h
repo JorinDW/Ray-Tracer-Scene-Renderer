@@ -8,7 +8,7 @@ public:
 protected:
     GLuint _vao; ///< vertex array object
     GLuint _pid; ///< GLSL shader program ID
-
+    GLuint _tex;
     //opengp::Surface_mesh mesh;
     GLuint _vpoint;    ///< memory buffer
     GLuint _vnormal;   ///< memory buffer
@@ -53,11 +53,11 @@ public:
     void draw(){
         bindShader();
             ///--- Setup the texture units
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, _tex);
-            //glUniform1f(glGetUniformLocation(_pid, "time"), glfwGetTime());
-            //glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
-            //glDrawElements(GL_TRIANGLES, /*#vertices*/ 3*mesh.n_faces(), GL_UNSIGNED_INT, ZERO_BUFFER_OFFSET);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, _tex);
+            glUniform1f(glGetUniformLocation(_pid, "time"), glfwGetTime());
+            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+            glDrawElements(GL_TRIANGLES, /*#vertices*/ 3*mesh.n_faces(), GL_UNSIGNED_INT, ZERO_BUFFER_OFFSET);
         unbindShader();
     }
     
