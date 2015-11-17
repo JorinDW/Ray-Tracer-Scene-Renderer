@@ -78,12 +78,16 @@ public:
 private:
     ///--- Bind shader(s)
     void bindShader() {
+        /// enable the opengl shaders
         glUseProgram(_pid);
+        /// bind the vertex array object
         glBindVertexArray(_vao);
+        /// check for error
         check_error_gl();
 
         ///--- Vertex Attribute ID for Positions
         GLint vpoint_id = glGetAttribLocation(_pid, "vpoint");
+        /// check that the
         if (vpoint_id >= 0) {
             glEnableVertexAttribArray(vpoint_id);
             check_error_gl();
