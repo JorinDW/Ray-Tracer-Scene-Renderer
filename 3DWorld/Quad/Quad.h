@@ -9,6 +9,8 @@ private:
     GLuint _pid; /// GLSL shader program ID
     bool wireframe = true; /// bolean used to determine wireframe or filled rendering
     const int _numOfTris = 10; /// the number of triangles to render on a side (square terrain mesh)
+    std::vector<unsigned int> indices;
+    std::vector<vec3> vpoint;
 public:
     ///--- Initialization of Quad
     void init(){
@@ -24,11 +26,16 @@ public:
         ///--- Vertex coordinates specification/generation
         /// We start with the simples strip of triangles, a four point quad
         /// We then produce the rest of the points based on the _numOfTris value through a for loop.
-        std::vector<vec3> vpoint;
-//        vpoint.push_back(vec3(-0.7f, -0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.7f, -0.5f, 0.0f));
-//        vpoint.push_back(vec3(-0.7f, +0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.7f, +0.5f, 0.0f));
+        vpoint.push_back(vec3(-0.5f, 0.5f, 0.0f));
+        vpoint.push_back(vec3(+0.0f, 0.5f, 0.0f));
+        vpoint.push_back(vec3(+0.5f, 0.5f, 0.0f));
+        vpoint.push_back(vec3(-0.5f, 0.0f, 0.0f));
+        vpoint.push_back(vec3(+0.0f, 0.0f, 0.0f));
+        vpoint.push_back(vec3(+0.5f, 0.0f, 0.0f));
+        vpoint.push_back(vec3(-0.5f, -0.5f, 0.0f));
+        vpoint.push_back(vec3(+0.0f, -0.5f, 0.0f));
+        vpoint.push_back(vec3(+0.5f, -0.5f, 0.0f));
+
         /// The max positions of the top, bottom, left and right sides
         float maxXY = 0.5;
         /// The actual distance to be split up into segments
@@ -37,16 +44,17 @@ public:
         float offsetXY = distanceXY/_numOfTris;
         /// Go through all _numOfTris x _numOfTris vertexs and push_back them into the vpoints vector
         /// Based on coords determined using the offsetXY and maxXY
-        for(int i = 0; i < _numOfTris; i++){
-            for(int j = 0; j < _numOfTris; j++){
-                /// The x,y,z values of the vertex
-                float x = -maxXY + offsetXY * i;
-                float y = maxXY - offsetXY *j;
-                float z = 0.0;
-                vpoint.push_back(vec3(x,y,z));
-                printf("vpoint x: %f, y: %f, z: 0\n", x, y);
-            }
-        }
+
+//        for(int i = 0; i < _numOfTris; i++){
+//            for(int j = 0; j < _numOfTris; j++){
+//                /// The x,y,z values of the vertex
+//                float x = -maxXY + offsetXY * j;
+//                float y = maxXY - offsetXY *i;
+//                float z = 0.0;
+//                vpoint.push_back(vec3(x,y,z));
+//                printf("vpoint x: %f, y: %f, z: 0\n", x, y);
+//            }
+//        }
 
         ///--- Vertex Buffer Object creation
         /// We first generate the vertex buffer
@@ -59,22 +67,31 @@ public:
         check_error_gl();
 
         ///--- Index Buffer Object population
-        std::vector<unsigned int> indices;
+
         /// iterate through the indice locations
 //        indices.push_back(0);
-//        indices.push_back(1);
+//        indices.push_back(2);
 //        indices.push_back(2);
 //        indices.push_back(3);
-        /// Restart index for the triangle strip rendering
-        int restartIndex = _numOfTris*_numOfTris;
         /// Run through all indices that we are going to use in the correct rendering order
-        for(int i = 0; i < restartIndex; i ++){
-            indices.push_back(i);
-//            indices.push_back(i + _numOfTris + 1);
-//            if((_numOfTris%i) == 0){
-//                indices.push_back(_numOfTris*_numOfTris);
-//            }
-        }
+        indices.push_back(0);
+        indices.push_back(3);
+        indices.push_back(1);
+        indices.push_back(4);
+        indices.push_back(2);
+        indices.push_back(5);
+        indices.push_back(4444);
+        indices.push_back(3);
+        indices.push_back(6);
+        indices.push_back(4);
+        indices.push_back(7);
+        indices.push_back(5);
+        indices.push_back(8);
+//        for(int i = 0; i < _numOfTris; i ++){
+//            indices.push_back(i);
+//            indices.push_back(i + _numOfTris - 1);
+//            if(_numOfTris%i == 0) indices.push_back(4444);
+//        }
 
         ///--- Index Buffer Object creation
         /// We first create a variable to use to connect the buffer generation with the buffer binding
@@ -113,11 +130,11 @@ public:
         /// Enable triangle strip looping using an index outside of the range of the indices
         glEnable(GL_PRIMITIVE_RESTART);
         /// Use _numOfTris squared to give us the restart index.
-        glPrimitiveRestartIndex(_numOfTris*_numOfTris);
+        glPrimitiveRestartIndex(4444);
         /// being polygon mode which enables the wireframe/filled mode switching
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         /// draw the elements onto the image
-        glDrawElements(GL_TRIANGLE_STRIP, _numOfTris*_numOfTris*2, GL_UNSIGNED_INT, ZERO_BUFFER_OFFSET);
+        glDrawElements(GL_TRIANGLE_STRIP,indices.size(), GL_UNSIGNED_INT, ZERO_BUFFER_OFFSET);
         /// unbind the shader
         unbindShader();
     }
