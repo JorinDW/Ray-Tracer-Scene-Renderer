@@ -19,8 +19,5 @@ uniform float time;
 //}
 
 void main() {
-    // gl_Position = S(.5) * R(10) * vec4(vpoint, 1.0);
     gl_Position = vec4(vpoint, 1.0);
-    
-//    uv = vtexcoord;
 }
