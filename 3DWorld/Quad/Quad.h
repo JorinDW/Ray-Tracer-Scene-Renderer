@@ -8,9 +8,9 @@ private:
     GLuint _ibo; /// index buffer object
     GLuint _pid; /// GLSL shader program ID
     bool wireframe = true; /// bolean used to determine wireframe or filled rendering
-    const int _numOfVerts = 10; /// the number of triangles to render on a side (square terrain mesh)
-    std::vector<unsigned int> indices;
-    std::vector<vec3> vpoint;
+    const int _numOfVerts = 100; /// the number of triangles to render on a side (square terrain mesh)
+    std::vector<unsigned int> indices; /// indices vector
+    std::vector<vec3> vpoint; /// vertex point vector
 public:
     ///--- Initialization of Quad
     void init(){
@@ -26,25 +26,14 @@ public:
         ///--- Vertex coordinates specification/generation
         /// We start with the simples strip of triangles, a four point quad
         /// We then produce the rest of the points based on the _numOfVerts value through a for loop.
-//        vpoint.push_back(vec3(-0.5f, 0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.0f, 0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.5f, 0.5f, 0.0f));
-//        vpoint.push_back(vec3(-0.5f, 0.0f, 0.0f));
-//        vpoint.push_back(vec3(+0.0f, 0.0f, 0.0f));
-//        vpoint.push_back(vec3(+0.5f, 0.0f, 0.0f));
-//        vpoint.push_back(vec3(-0.5f, -0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.0f, -0.5f, 0.0f));
-//        vpoint.push_back(vec3(+0.5f, -0.5f, 0.0f));
-
         /// The max positions of the top, bottom, left and right sides
-        float maxXY = 0.5;
+        float maxXY = 0.9;
         /// The actual distance to be split up into segments
         float distanceXY = maxXY * 2;
         /// The size of the steps that we take between points
         float offsetXY = distanceXY/_numOfVerts;
         /// Go through all _numOfVerts x _numOfVerts vertexs and push_back them into the vpoints vector
         /// Based on coords determined using the offsetXY and maxXY
-
         for(int i = 0; i < _numOfVerts; i++){
             for(int j = 0; j < _numOfVerts; j++){
                 /// The x,y,z values of the vertex
@@ -52,7 +41,7 @@ public:
                 float y = maxXY - offsetXY * i;
                 float z = 0.0;
                 vpoint.push_back(vec3(x,y,z));
-                printf("vpoint x: %f, y: %f, z: 0\n", x, y);
+                //printf("vpoint x: %f, y: %f, z: 0\n", x, y);
             }
         }
 
@@ -68,28 +57,13 @@ public:
 
         ///--- Index Buffer Object population
         /// iterate through the indice locations
-//        indices.push_back(0);
-//        indices.push_back(2);
-//        indices.push_back(2);
-//        indices.push_back(3);
         /// Run through all indices that we are going to use in the correct rendering order
-//        indices.push_back(0);
-//        indices.push_back(3);
-//        indices.push_back(1);
-//        indices.push_back(4);
-//        indices.push_back(2);
-//        indices.push_back(5);
-//        indices.push_back(4444);
-//        indices.push_back(3);
-//        indices.push_back(6);
-//        indices.push_back(4);
-//        indices.push_back(7);
-//        indices.push_back(5);
-//        indices.push_back(8);
         for(int i = 0; i < _numOfVerts * ( _numOfVerts - 1); i ++){
+            /// If i is a remainder = 0 divisor of _numOfVerts then push back our restart index
             if(i%_numOfVerts == 0){
                 indices.push_back(pow(_numOfVerts,2));
             }
+            /// Push in the pair of indices, i, and i + _numOfVerts
             indices.push_back(i);
             indices.push_back(i + _numOfVerts);
         }
@@ -153,10 +127,15 @@ private:
         GLint vpoint_id = glGetAttribLocation(_pid, "vpoint");
         /// check that vpoint_id is greater or equal to 0
         if (vpoint_id >= 0) {
+            /// send the vpoint array to the GPU
             glEnableVertexAttribArray(vpoint_id);
+            /// check that the vpoint made it
             check_error_gl();
+            /// bind the vertex buffer object
             glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+            /// give GPU access to the beginning of the vpoint array
             glVertexAttribPointer(vpoint_id, 3 /*vec3*/, GL_FLOAT, DONT_NORMALIZE, ZERO_STRIDE, ZERO_BUFFER_OFFSET);
+            /// check for errors
             check_error_gl();
         }
     }

@@ -37,6 +37,7 @@ int main(int, char**){
     glfwMainLoop();
     ///--- Cleanup after our project exits the glfwMainLoop
     //quad.cleanup();
+    perlin.cleanup();
     ///--- Exit the main loop
     return EXIT_SUCCESS;
 }
