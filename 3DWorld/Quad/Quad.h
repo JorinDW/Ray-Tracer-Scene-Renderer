@@ -7,6 +7,8 @@ private:
     GLuint _vbo; /// vertex buffer object
     GLuint _ibo; /// index buffer object
     GLuint _pid; /// GLSL shader program ID
+    GLuint _tex; /// Texture ID
+    GLuint _tex_night; /// Texture ID
     bool wireframe = true; /// bolean used to determine wireframe or filled rendering
     const int _numOfVerts = 100; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
@@ -89,6 +91,14 @@ public:
         _pid = opengp::load_shaders("Quad/vshader.glsl", "Quad/fshader.glsl");
         if(!_pid) exit(EXIT_FAILURE);
         glUseProgram(_pid);
+
+        ///--- Load texture
+                glGenTextures(1, &_tex);
+                glBindTexture(GL_TEXTURE_2D, _tex);
+                glfwLoadTexture2D("Quad/texture.tga", 0);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glUniform1i(glGetUniformLocation(_pid, "tex"), 0 /*GL_TEXTURE0*/);
     }
 
     ///--- Cleanup the quad
@@ -107,6 +117,10 @@ public:
     void draw(){
         /// Binds the data that we setup in the init() to the shaders
         bindShader();
+        ///--- Setup the texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, _tex);
+        glUniform1f(glGetUniformLocation(_pid, "time"), glfwGetTime());
         /// Enable triangle strip looping using an index outside of the range of the indices
         glEnable(GL_PRIMITIVE_RESTART);
         /// Use _numOfVerts squared to give us the restart index.
