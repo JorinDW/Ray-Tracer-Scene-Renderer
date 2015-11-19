@@ -12,6 +12,11 @@ private:
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
 public:
+    ///return the program ID to the main loop
+    GLuint getProgramID(){
+        return _pid;
+    }
+
     ///--- Initialization of Quad
     void init(){
 

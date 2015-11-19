@@ -1,23 +1,21 @@
 #version 330 core
-in vec3 vpoint;
-in vec2 vtexcoord;
-out vec2 uv;
 uniform float time;
+in vec3 vpoint; ///< [-1,+1]
+out float vheight; ///< for debug coloring
+out float scale=.5;
 
-//mat4 S(float s){
-//    return mat4(mat3(s));
-//}
+uniform mat4 MODEL;
+uniform mat4 VIEW;
+uniform mat4 PROJ;
 
-//mat4 R(float degrees){
-//    mat3 R = mat3(1);
-//    float alpha = radians(degrees);
-//    R[0][0] =  cos(alpha);
-//    R[0][1] =  sin(alpha);
-//    R[1][0] = -sin(alpha);
-//    R[1][1] =  cos(alpha);
-//    return mat4(R);
-//}
+uniform sampler2D tex;
+float tex_at(vec2 uv){ return texture(tex,uv).r; }
 
 void main() {
-    gl_Position = vec4(vpoint, 1.0);
+    /// UNCOMMENT ONE OF THESE
+    vheight = 0;
+//    vheight = scale * sin(10*vpoint.x + time);
+    //vheight = scale * tex_at( .5*vec2(time+vpoint.x, vpoint.y)+.5 );
+
+    gl_Position = PROJ * VIEW * MODEL * vec4(vpoint.x, vpoint.y, vheight, 1.0);
 }
