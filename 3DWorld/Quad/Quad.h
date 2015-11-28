@@ -130,24 +130,40 @@ public:
 private:
     ///--- FBM calculator
     RGBImage makeFBM(RGBImage perlin){
-        double H = 2;
-        double lacunarity = 10;
-        double MAX_OCTAVES = 10;
-        double value;
-        double frequency = 4.0;
-        double remainder;
-        float octave;
+        double H = 0.5;
+        double lacunarity = 2;
+        int MAX_OCTAVES = 10;
+        vec3 value;
+        double frequency;
+        double amplitude = 1;
+        double expArray[MAX_OCTAVES];
         RGBImage fbm(perlin.rows(),perlin.cols());
         for(int i = 0; i < perlin.cols(); i++){
             for(int j = 0; j < perlin.rows(); j++){
+                int x = i;
+                int y = j;
+                value = vec3(0.0,0.0,0.0);
+                frequency = 2.0;
                 for(int k = 0; k < MAX_OCTAVES; k++){
-                    octave = pow(frequency, -H);
+                    expArray[k] = pow(frequency, -H);
                     frequency *= lacunarity;
-                    fbm(i,j) += vec3(0,0,perlin(i,j)[2] * octave);
                 }
+                for(int l = 0; l < MAX_OCTAVES; l++){
+                    value += perlin(x%perlin.rows(),y%perlin.cols()) * expArray[l];
+                    x *= lacunarity;
+                    y *= lacunarity;
+                }
+
+                fbm(i,j) = value * amplitude;
             }
         }
         return fbm;
+    }
+
+    double exp_array_gen(int k,double freq, double H, double lac){
+        double octave = pow(freq,-H);
+
+        return octave;
     }
 
     ///--- Bind shader(s)

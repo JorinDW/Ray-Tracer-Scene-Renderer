@@ -7,8 +7,8 @@ private:
 public:
     ///--- Initialization of Perlin
     RGBImage init(){
-        int width = 512;
-        int height = 512;
+        int width = 200;
+        int height = 200;
 
         //Create the base noise
         vec3 randGradientVec;
