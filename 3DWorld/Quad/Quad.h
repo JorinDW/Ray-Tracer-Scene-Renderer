@@ -91,9 +91,9 @@ public:
         _pid = opengp::load_shaders("Quad/vshader.glsl", "Quad/fshader.glsl");
         if(!_pid) exit(EXIT_FAILURE);
         glUseProgram(_pid);
-
+        RGBImage fBm = makeFBM(perlin);
         ///--- Load texture
-        loadTextureRGB32F(perlin.data(), perlin.rows(), perlin.cols());
+        loadTextureRGB32F(fBm.data(), fBm.rows(), fBm.cols());
     }
 
     ///--- Cleanup the quad
@@ -128,6 +128,28 @@ public:
         unbindShader();
     }
 private:
+    ///--- FBM calculator
+    RGBImage makeFBM(RGBImage perlin){
+        double H = 2;
+        double lacunarity = 10;
+        double MAX_OCTAVES = 10;
+        double value;
+        double frequency = 4.0;
+        double remainder;
+        float octave;
+        RGBImage fbm(perlin.rows(),perlin.cols());
+        for(int i = 0; i < perlin.cols(); i++){
+            for(int j = 0; j < perlin.rows(); j++){
+                for(int k = 0; k < MAX_OCTAVES; k++){
+                    octave = pow(frequency, -H);
+                    frequency *= lacunarity;
+                    fbm(i,j) += vec3(0,0,perlin(i,j)[2] * octave);
+                }
+            }
+        }
+        return fbm;
+    }
+
     ///--- Bind shader(s)
     void bindShader() {
         /// enable the opengl shaders

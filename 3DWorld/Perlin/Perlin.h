@@ -25,8 +25,8 @@ public:
                 randGradientVec(2) = 0;
                 base(i, j) = randGradientVec;
             }
-        float s1 = 0.5;
-        float s2 = 1.7;
+        float s1 = 1.0;
+        float s2 = 1.0;
         float s3 = 1.0;
         RGBImage perlin1(width,height);
         perlin1 = makePerlin(width,height,64,base,s1); //makePerlin(int width, int height, int period, RGBImage base, float strength)
