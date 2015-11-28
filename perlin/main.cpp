@@ -21,7 +21,7 @@ float f(float t)
     float t_3 = t * t * t;
     return 6 * t * t * t_3 - 15 * t * t_3 + 10 * t_3;
 }
-RGBImage makePerlin(int width, int height, int period, RGBImage base){
+RGBImage makePerlin(int width, int height, int period, RGBImage base,float strength){
     RGBImage PerlinNoise(width, height);
     float frequency = 1.0f / period;
     for (int i = 0; i < width; ++ i)
@@ -56,7 +56,7 @@ RGBImage makePerlin(int width, int height, int period, RGBImage base){
            float uv = mix(u, v, fx);
            float noise = mix(st, uv, fy);
 
-           PerlinNoise(i, j) = vec3(noise, noise, noise);
+           PerlinNoise(i, j) = vec3(noise*strength, noise*strength, noise*strength);
        }
     return PerlinNoise;
 }
@@ -82,15 +82,16 @@ int main(int, char**){
             base(i, j) = randGradientVec;
         }
     RGBImage perlin1(width,height);
-    perlin1 = makePerlin(width,height,64,base);
+    perlin1 = makePerlin(width,height,64,base,0.5);
     RGBImage perlin2(width,height);
-    perlin2 = makePerlin(width,height,32,base);
+    perlin2 = makePerlin(width,height,32,base,1.7);
     RGBImage perlin3(width,height);
-    perlin3 = makePerlin(width,height,16,base);
+    perlin3 = makePerlin(width,height,16,base,1.0);
 
     //showImage(base, "Base Noise");
     RGBImage perlinCombo(width,height);
-    perlinCombo = perlin1 + perlin2 + perlin3;
+    //perlinCombo = perlin1*0.1 + perlin2*0.3 + perlin3*0.6;
+    perlinCombo = perlin1 + perlin2 - perlin3;
     showImage(perlinCombo, "Perlin Noise");
 //    //This is a demo code for using the EigenVisualizer namespace
 //    //TODO: change the following code so we can make a single frequency perlin noise
