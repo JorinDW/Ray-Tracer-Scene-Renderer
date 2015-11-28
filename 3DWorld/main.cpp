@@ -6,18 +6,16 @@ Quad quad;
 Perlin perlin;
 float theta = 30;
 int windowDimension = 880;
-
 ///Initializes the image by performing all perlin, mesh, heightmap, and other calls that generate the terrain.
 void init(){
     glfwEnable(GLFW_KEY_REPEAT);
     ///--- Initializes the Perlin noise texture
-    //perlin.init();
     ///--- Initializes the fBm texture
     ///--- Sets background color
     glClearColor(/*gray*/ .937,.937,.937, /*solid*/1.0 );
     glEnable(GL_DEPTH_TEST);
     ///--- Initlializes the terrain quad mesh (?takes the fBm as an input for displacing the height of vertices?)
-    quad.init();
+    quad.init(perlin.init());
 }
 
 ///Displays
@@ -46,6 +44,8 @@ void display(){
 
 /// NOTE: see glfwEnable(GLFW_KEY_REPEAT)
 void keyboard(int key, int action){
+    if (action==GLFW_PRESS && key==GLFW_KEY_SPACE)
+            quad.wireframe = !quad.wireframe;
     if (action==GLFW_PRESS && key==GLFW_KEY_UP)
         theta = std::min( theta+1, +89.f );
     if (action==GLFW_PRESS && key==GLFW_KEY_DOWN)

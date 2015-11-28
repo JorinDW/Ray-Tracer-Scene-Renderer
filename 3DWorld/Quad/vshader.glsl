@@ -17,11 +17,11 @@ uniform mat4 MODEL;
 uniform mat4 VIEW;
 uniform mat4 PROJ;
 uniform sampler2D tex;
-float tex_at(vec2 uv){ return texture(tex,uv).b*5; }
+float tex_at(vec2 uv){ return texture(tex,uv).b; }
 
 void main() {
 
-
+    //vheight =
 
 
 
@@ -30,9 +30,9 @@ void main() {
     //int j = 5
     //vheight = j;
     //vheight = scale * sin(10*vpoint.x + time);
-    //vheight = scale * tex_at( .5*vec2(time+vpoint.x, vpoint.y)+.5 );
+    vheight = scale * tex_at( .5*vec2(vpoint.x, vpoint.y)+.5 );
     //double f = 0.5;
     //vheight = f;
-
+    //vheight = 0;
     gl_Position = PROJ * VIEW * MODEL * vec4(vpoint.x, vpoint.y, vheight, 1.0);
 }

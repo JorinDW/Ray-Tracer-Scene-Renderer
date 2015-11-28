@@ -1,6 +1,6 @@
 #pragma once
 #include "icg_common.h"
-
+typedef Eigen::Matrix<Eigen::Vector3f, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> RGBImage;
 class Quad{
 private:
     GLuint _vao; /// vertex array object
@@ -9,18 +9,18 @@ private:
     GLuint _pid; /// GLSL shader program ID
     GLuint _tex; /// Texture ID
     GLuint _tex_night; /// Texture ID
-    bool wireframe = true; /// bolean used to determine wireframe or filled rendering
     const int _numOfVerts = 200; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
 public:
+    bool wireframe = true; /// bolean used to determine wireframe or filled rendering
     ///return the program ID to the main loop
     GLuint getProgramID(){
         return _pid;
     }
 
     ///--- Initialization of Quad
-    void init(){
+    void init(RGBImage perlin){
 
         ///--- Vertex Array Object creation
         /// We first generate a vertex array in the GPU
@@ -93,12 +93,7 @@ public:
         glUseProgram(_pid);
 
         ///--- Load texture
-                glGenTextures(1, &_tex);
-                glBindTexture(GL_TEXTURE_2D, _tex);
-                glfwLoadTexture2D("Quad/texture.tga", 0);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glUniform1i(glGetUniformLocation(_pid, "tex"), 0 /*GL_TEXTURE0*/);
+        loadTextureRGB32F(perlin.data(), perlin.rows(), perlin.cols());
     }
 
     ///--- Cleanup the quad
@@ -126,7 +121,7 @@ public:
         /// Use _numOfVerts squared to give us the restart index.
         glPrimitiveRestartIndex(pow(_numOfVerts,2));
         /// being polygon mode which enables the wireframe/filled mode switching
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
         /// draw the elements onto the image
         glDrawElements(GL_TRIANGLE_STRIP,indices.size(), GL_UNSIGNED_INT, ZERO_BUFFER_OFFSET);
         /// unbind the shader
@@ -158,6 +153,7 @@ private:
             check_error_gl();
         }
     }
+
     ///--- Unbind shader(s)
     void unbindShader() {
         GLint vpoint_id = glGetAttribLocation(_pid, "vpoint");
@@ -166,4 +162,17 @@ private:
         glUseProgram(0);
         glBindVertexArray(0);
     }
+
+    ///---Bind the perlin texture so that it can be used in the vshader
+    void loadTextureRGB32F(void * pTex, int width, int height)
+        {
+            glBindTexture(GL_TEXTURE_2D, _tex);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width,
+                            height, 0, GL_RGB, GL_FLOAT,
+                            pTex);
+        }
 };

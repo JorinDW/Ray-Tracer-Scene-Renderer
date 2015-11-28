@@ -21,6 +21,7 @@ float f(float t)
     float t_3 = t * t * t;
     return 6 * t * t * t_3 - 15 * t * t_3 + 10 * t_3;
 }
+
 RGBImage makePerlin(int width, int height, int period, RGBImage base,float strength){
     RGBImage PerlinNoise(width, height);
     float frequency = 1.0f / period;
@@ -81,31 +82,23 @@ int main(int, char**){
             randGradientVec(2) = 0;
             base(i, j) = randGradientVec;
         }
+    float s1 = 0.5;
+    float s2 = 1.7;
+    float s3 = 1.0;
     RGBImage perlin1(width,height);
-    perlin1 = makePerlin(width,height,64,base,0.5);
+    perlin1 = makePerlin(width,height,64,base,s1); //makePerlin(int width, int height, int period, RGBImage base, float strength)
     RGBImage perlin2(width,height);
-    perlin2 = makePerlin(width,height,32,base,1.7);
+    perlin2 = makePerlin(width,height,32,base,s2);
     RGBImage perlin3(width,height);
-    perlin3 = makePerlin(width,height,16,base,1.0);
+    perlin3 = makePerlin(width,height,16,base,s3);
 
-    //showImage(base, "Base Noise");
     RGBImage perlinCombo(width,height);
-    //perlinCombo = perlin1*0.1 + perlin2*0.3 + perlin3*0.6;
+
     perlinCombo = perlin1 + perlin2 - perlin3;
-    showImage(perlinCombo, "Perlin Noise");
-//    //This is a demo code for using the EigenVisualizer namespace
-//    //TODO: change the following code so we can make a single frequency perlin noise
-//    RGBImage image(512, 512);
+    //string title = "Perlin noise with strengths: " + s1.toString() + ", " + s2.toString() + ", " + s3.toString();
+    char title[] = "Perlin Noise with strengths";
+    showImage(perlinCombo, title);
 
-//    for (int i = 0; i < 512; ++ i)
-//    {
-//        for (int j = 0; j < 512; ++ j)
-//        {
-//            image(i, j) = vec3(i/512.0f, j/512.0f, 0);
-//        }
-//    }
-
-//    showImage(image);
 
     return EXIT_SUCCESS;
 
