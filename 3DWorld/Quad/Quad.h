@@ -10,7 +10,7 @@ private:
     GLuint _tex; /// Texture ID
     GLuint _tex_night; /// Texture ID
     bool wireframe = true; /// bolean used to determine wireframe or filled rendering
-    const int _numOfVerts = 100; /// the number of triangles to render on a side (square terrain mesh)
+    const int _numOfVerts = 200; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
 public:
