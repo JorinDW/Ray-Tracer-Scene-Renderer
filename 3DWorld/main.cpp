@@ -12,7 +12,7 @@ void init(){
     ///--- Initializes the Perlin noise texture
     ///--- Initializes the fBm texture
     ///--- Sets background color
-    glClearColor(/*gray*/ .937,.937,.937, /*solid*/1.0 );
+    glClearColor(/*gray*/ .8,.8,.8, /*solid*/1.0 );
     glEnable(GL_DEPTH_TEST);
     ///--- Initlializes the terrain quad mesh (?takes the fBm as an input for displacing the height of vertices?)
     quad.init(perlin.init());
