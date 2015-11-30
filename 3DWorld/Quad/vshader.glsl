@@ -9,6 +9,11 @@ uniform mat4 MODEL;
 uniform mat4 VIEW;
 uniform mat4 PROJ;
 uniform sampler2D tex;
+//uniform sampler2D grass;
+//uniform sampler2D sand;
+//uniform sampler2D rock;
+//uniform sampler2D water;
+//uniform sampler2D snow;
 float tex_at(vec2 uv){ return texture(tex,uv).b; }
 
 void main() {

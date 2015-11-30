@@ -9,6 +9,11 @@ private:
     GLuint _pid; /// GLSL shader program ID
     GLuint _tex; /// Texture ID
     GLuint _tex_night; /// Texture ID
+    GLuint _snow;
+    GLuint _grass;
+    GLuint _sand;
+    GLuint _rock;
+    GLuint _water;
     const int _numOfVerts = 200; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
@@ -115,6 +120,18 @@ public:
         ///--- Setup the texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, _tex);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, _snow);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, _grass);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, _sand);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, _rock);
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, _water);
+
+
         glUniform1f(glGetUniformLocation(_pid, "time"), glfwGetTime());
         /// Enable triangle strip looping using an index outside of the range of the indices
         glEnable(GL_PRIMITIVE_RESTART);
@@ -210,7 +227,7 @@ private:
             glBindTexture(GL_TEXTURE_2D, _tex);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);`
 //            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 //            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 //            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -219,5 +236,51 @@ private:
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width,
                             height, 0, GL_RGB, GL_FLOAT,
                             pTex);
+
+            glGenTextures(1, &_snow);
+            glBindTexture(GL_TEXTURE_2D, _snow);
+            glfwLoadTexture2D("Quad/snow.tga", 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glUniform1i(glGetUniformLocation(_pid, "snow"), 1 /*GL_TEXTURE0*/);
+
+            glGenTextures(1, &_grass);
+            glBindTexture(GL_TEXTURE_2D, _grass);
+            glfwLoadTexture2D("Quad/grass.tga", 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glUniform1i(glGetUniformLocation(_pid, "grass"), 2 /*GL_TEXTURE0*/);
+
+            glGenTextures(1, &_sand);
+            glBindTexture(GL_TEXTURE_2D, _sand);
+            glfwLoadTexture2D("Quad/sand.tga", 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glUniform1i(glGetUniformLocation(_pid, "sand"), 3 /*GL_TEXTURE0*/);
+
+            glGenTextures(1, &_rock);
+            glBindTexture(GL_TEXTURE_2D, _rock);
+            glfwLoadTexture2D("Quad/rock.tga", 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glUniform1i(glGetUniformLocation(_pid, "rock"), 4 /*GL_TEXTURE0*/);
+
+            glGenTextures(1, &_water);
+            glBindTexture(GL_TEXTURE_2D, _water);
+            glfwLoadTexture2D("Quad/water.tga", 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glUniform1i(glGetUniformLocation(_pid, "water"), 5 /*GL_TEXTURE0*/);
+
         }
 };
