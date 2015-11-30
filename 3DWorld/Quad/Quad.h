@@ -131,11 +131,11 @@ private:
     ///--- FBM calculator
     RGBImage makeFBM(RGBImage perlin){
         double H = 0.25;
-        double lacunarity = 2;
+        double lacunarity = 1;
         int MAX_OCTAVES = 8;
         vec3 value;
         double frequency;
-        double amplitude = 0.5;
+        double amplitude = 0.25;
         double expArray[MAX_OCTAVES];
         int first = 1;
         RGBImage fbm(perlin.rows(),perlin.cols());

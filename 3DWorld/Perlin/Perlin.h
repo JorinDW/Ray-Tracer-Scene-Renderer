@@ -26,19 +26,23 @@ public:
                 base(i, j) = randGradientVec;
             }
         float s1 = 1.0;
-        float s2 = 1.0;
-        float s3 = 1.0;
+//        float s2 = 1.0;
+//        float s3 = 1.0;
         RGBImage perlin1(width,height);
-        perlin1 = makePerlin(width,height,64,base,s1); //makePerlin(int width, int height, int period, RGBImage base, float strength)
-        RGBImage perlin2(width,height);
-        perlin2 = makePerlin(width,height,76,base,s2);
-        RGBImage perlin3(width,height);
-        perlin3 = makePerlin(width,height,50,base,s3);
+//        perlin1 = makePerlin(width,height,256,base,s1); //makePerlin(int width, int height, int period, RGBImage base, float strength)
+//        RGBImage perlin2(width,height);
+//        perlin2 = makePerlin(width,height,64,base,s2);
+//        RGBImage perlin3(width,height);
+//        perlin3 = makePerlin(width,height,16,base,s3);
+//        RGBImage perlinCombo(width,height);
+//        perlinCombo = perlin1;
+        int period = 256;
+        for(int i = 0; i < 4 ; i++){
+            perlin1 += makePerlin(width,height,period,base,s1);
+            period = period/2;
+        }
 
-        RGBImage perlinCombo(width,height);
-
-        perlinCombo = perlin1 + perlin2 - perlin3;
-        return perlinCombo;
+        return perlin1;
     }
 private:
     ///--- Bind shader(s)
