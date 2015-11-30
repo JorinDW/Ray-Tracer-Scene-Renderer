@@ -7,8 +7,8 @@ private:
 public:
     ///--- Initialization of Perlin
     RGBImage init(){
-        int width = 200;
-        int height = 200;
+        int width = 512;
+        int height = 512;
 
         //Create the base noise
         vec3 randGradientVec;
@@ -31,9 +31,9 @@ public:
         RGBImage perlin1(width,height);
         perlin1 = makePerlin(width,height,64,base,s1); //makePerlin(int width, int height, int period, RGBImage base, float strength)
         RGBImage perlin2(width,height);
-        perlin2 = makePerlin(width,height,32,base,s2);
+        perlin2 = makePerlin(width,height,76,base,s2);
         RGBImage perlin3(width,height);
-        perlin3 = makePerlin(width,height,16,base,s3);
+        perlin3 = makePerlin(width,height,50,base,s3);
 
         RGBImage perlinCombo(width,height);
 

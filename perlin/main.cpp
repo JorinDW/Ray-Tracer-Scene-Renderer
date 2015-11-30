@@ -64,8 +64,8 @@ RGBImage makePerlin(int width, int height, int period, RGBImage base,float stren
 
 int main(int, char**){
 
-    int width = 512;
-    int height = 512;
+    int width = 300;
+    int height = 300;
 
     //Create the base noise
     vec3 randGradientVec;

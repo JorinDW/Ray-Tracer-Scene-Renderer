@@ -130,30 +130,33 @@ public:
 private:
     ///--- FBM calculator
     RGBImage makeFBM(RGBImage perlin){
-        double H = 0.5;
+        double H = 0.25;
         double lacunarity = 2;
-        int MAX_OCTAVES = 10;
+        int MAX_OCTAVES = 8;
         vec3 value;
         double frequency;
-        double amplitude = 1;
+        double amplitude = 0.5;
         double expArray[MAX_OCTAVES];
+        int first = 1;
         RGBImage fbm(perlin.rows(),perlin.cols());
         for(int i = 0; i < perlin.cols(); i++){
             for(int j = 0; j < perlin.rows(); j++){
                 int x = i;
                 int y = j;
                 value = vec3(0.0,0.0,0.0);
-                frequency = 2.0;
-                for(int k = 0; k < MAX_OCTAVES; k++){
-                    expArray[k] = pow(frequency, -H);
-                    frequency *= lacunarity;
+                if(first){
+                    frequency = 2;
+                    for(int k = 0; k < MAX_OCTAVES; k++){
+                        expArray[k] = pow(frequency, -H);
+                        frequency *= lacunarity;
+                    }
+                    first = 0;
                 }
                 for(int l = 0; l < MAX_OCTAVES; l++){
                     value += perlin(x%perlin.rows(),y%perlin.cols()) * expArray[l];
                     x *= lacunarity;
                     y *= lacunarity;
                 }
-
                 fbm(i,j) = value * amplitude;
             }
         }
@@ -207,6 +210,10 @@ private:
             glBindTexture(GL_TEXTURE_2D, _tex);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width,
