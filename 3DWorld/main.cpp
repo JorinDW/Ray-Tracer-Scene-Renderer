@@ -50,6 +50,11 @@ void keyboard(int key, int action){
         theta = std::min( theta+1, +89.f );
     if (action==GLFW_PRESS && key==GLFW_KEY_DOWN)
         theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==GLFW_KEY_LEFT)
+        theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==GLFW_KEY_RIGHT )
+        theta = std::max( theta-1, -89.f );
+
 }
 
 int main(int, char**){

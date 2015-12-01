@@ -14,7 +14,7 @@ private:
     GLuint _sand;
     GLuint _rock;
     GLuint _water;
-    const int _numOfVerts = 200; /// the number of triangles to render on a side (square terrain mesh)
+    const int _numOfVerts = 400; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
 public:
@@ -148,11 +148,11 @@ private:
     ///--- FBM calculator
     RGBImage makeFBM(RGBImage perlin){
         double H = 0.25;
-        double lacunarity = 1;
-        int MAX_OCTAVES = 8;
+        double lacunarity = 2;
+        int MAX_OCTAVES = 2;
         vec3 value;
         double frequency;
-        double amplitude = 0.25;
+        double amplitude = 0.85;
         double expArray[MAX_OCTAVES];
         int first = 1;
         RGBImage fbm(perlin.rows(),perlin.cols());

@@ -26,7 +26,7 @@ float vdot;
 vec3 vertical = vec3(0,0,1);
 vec3 ex;
 vec3 ey;
-vec3 light = vec3(0,0.9,1);
+vec3 light = vec3(0,-1,1);
 float tex_at(vec2 uv){ return texture(tex,uv).b; }
 float stepx;
 float stepy;
@@ -41,12 +41,16 @@ void main() {
     vdot = dot(normal,normalize(vertical));
     //color = vec3(0,0,0);
     vec4 texColor;
-    int tiling = 16;
-    if(fpoint.z < 0.01){//water
+    int tiling = 25;
+    if(fpoint.z < 0.005){//water
         texColor = texture(water,vec2(fpoint.x,fpoint.y)*tiling);
-        color = 0.99*dot*mix(White,vec3(texColor.r, texColor.g, texColor.b),1);
+        //color = mix(0.8*vec3(texColor.r, texColor.g, texColor.b),vec3(texColor.r, texColor.g, texColor.b),0.01*vheight);
+        color = mix(White,vec3(texColor.r, texColor.g, texColor.b),1);
+       if(fpoint.z < 0.001){
+           color = 0.85*vec3(texColor.r, texColor.g, texColor.b);
+       }
     }else{//land
-        if(vdot < 0.25){//rock
+        if(vdot < 0.6){//rock
             texColor = texture(rock,vec2(fpoint.x,fpoint.y)*tiling);
         }else{
             if(fpoint.z > 0.01 && fpoint.z < 0.02){//sand
@@ -55,29 +59,12 @@ void main() {
             if(fpoint.z > 0.02 && fpoint.z < 0.09){//grass
                 texColor = texture(grass,vec2(fpoint.x,fpoint.y)*tiling);
             }
-            if(fpoint.z > 0.09){//snow
+            if(fpoint.z > 0.08){//snow
                 texColor = texture(snow,vec2(fpoint.x,fpoint.y)*tiling);
             }
         }
         color = dot*mix(White,vec3(texColor.r, texColor.g, texColor.b),1);
     }
-
-
-
-    /*water = mix(Blue,Green,5*(vheight/scale));
-    land = mix(Green,White,1.1*(vheight/scale));
-    if(vheight < 0.01){
-        color = water;
-    }else{
-        color = dot*mix(White,land,1);//mix(Green,White,1.1*(vheight/scale));
-    }*/
-    /*
-    if(vheight < 0.02){
-        color = dot*White;//mix(Blue,Green,5*(vheight/scale));
-    }
-    else{
-        color = dot*White;//mix(Green,White,1.1*(vheight/scale));
-    }*/
 }
 
 
