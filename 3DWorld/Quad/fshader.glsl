@@ -53,13 +53,13 @@ void main() {
         if(vdot < 0.6){//rock
             texColor = texture(rock,vec2(fpoint.x,fpoint.y)*tiling);
         }else{
-            if(fpoint.z > 0.01 && fpoint.z < 0.02){//sand
+            if(fpoint.z > 0.005 && fpoint.z < 0.02){//sand
                 texColor = texture(sand,vec2(fpoint.x,fpoint.y)*tiling);
             }
-            if(fpoint.z > 0.02 && fpoint.z < 0.09){//grass
+            else if(fpoint.z > 0.02 && fpoint.z < 0.09){//grass
                 texColor = texture(grass,vec2(fpoint.x,fpoint.y)*tiling);
             }
-            if(fpoint.z > 0.08){//snow
+            else if(fpoint.z > 0.08){//snow
                 texColor = texture(snow,vec2(fpoint.x,fpoint.y)*tiling);
             }
         }

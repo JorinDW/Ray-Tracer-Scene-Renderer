@@ -5,6 +5,15 @@
 Quad quad;
 Perlin perlin;
 float theta = 30;
+float camX = 0;
+float camY = 0;
+float camZ = 0;
+float rateX = 0;
+float rateY = 0;
+float rateZ = 0;
+float lookX = 0;
+float lookY = 0;
+float lookZ = 0;
 int windowDimension = 880;
 ///Initializes the image by performing all perlin, mesh, heightmap, and other calls that generate the terrain.
 void init(){
@@ -31,8 +40,12 @@ void display(){
             glUniformMatrix4fv(glGetUniformLocation(pid, "MODEL"), 1, GL_FALSE, MODEL.data());
 
             float theta_rad = M_PI/180.0*theta;
-            vec3 camera_pos( 0, -2*cos(theta_rad), 2*sin(theta_rad));
-            mat4 VIEW = Eigen::lookAt( camera_pos, vec3(0,0,0), vec3(0,0,1) ); //< "z" up on screen
+            //vec3 camera_pos( camX, camY, 2*sin(theta_rad));
+            camX = camX + rateX;
+            camY = camY + rateY;
+            camZ = camZ + rateZ;
+            vec3 camera_pos(camX,camY,camZ);
+            mat4 VIEW = Eigen::lookAt( camera_pos, vec3(lookX,lookY,lookZ), vec3(0,0,1) ); //< "z" up on screen
             glUniformMatrix4fv(glGetUniformLocation(pid, "VIEW"), 1, GL_FALSE, VIEW.data());
 
             mat4 PROJ = Eigen::perspective(75.0f, windowDimension/(float)windowDimension, 0.1f, 10.0f);
@@ -46,14 +59,57 @@ void display(){
 void keyboard(int key, int action){
     if (action==GLFW_PRESS && key==GLFW_KEY_SPACE)
             quad.wireframe = !quad.wireframe;
-    if (action==GLFW_PRESS && key==GLFW_KEY_UP)
-        theta = std::min( theta+1, +89.f );
-    if (action==GLFW_PRESS && key==GLFW_KEY_DOWN)
-        theta = std::max( theta-1, -89.f );
-    if (action==GLFW_PRESS && key==GLFW_KEY_LEFT)
-        theta = std::max( theta-1, -89.f );
-    if (action==GLFW_PRESS && key==GLFW_KEY_RIGHT )
-        theta = std::max( theta-1, -89.f );
+    //camera position
+    if (action==GLFW_PRESS && key==GLFW_KEY_UP){
+        rateY += 0.001;
+    }
+        //theta = std::min( theta+1, +89.f );
+    if (action==GLFW_PRESS && key==GLFW_KEY_DOWN){
+        rateY -= 0.001;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==GLFW_KEY_LEFT){
+        rateX += 0.001;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==GLFW_KEY_RIGHT){
+        rateX -= 0.001;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==49){
+        rateZ += 0.001;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==50){
+        rateZ -= 0.001;
+    }
+
+    //lookat position
+    if (action==GLFW_PRESS && key==51){
+        lookX += 0.05;
+    }
+        //theta = std::min( theta+1, +89.f );
+    if (action==GLFW_PRESS && key==52){
+        lookX -= 0.05;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==53){
+        lookY += 0.05;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==54){
+        lookY -= 0.05;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==55){
+        lookZ += 0.05;
+    }
+        //theta = std::max( theta-1, -89.f );
+    if (action==GLFW_PRESS && key==56){
+        lookZ -= 0.05;
+    }
+//    GLFW_MOUSE_BUTTON_LEFT
+//    if ()
 
 }
 
