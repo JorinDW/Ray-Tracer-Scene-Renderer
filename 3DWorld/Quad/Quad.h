@@ -14,7 +14,7 @@ private:
     GLuint _sand;
     GLuint _rock;
     GLuint _water;
-    const int _numOfVerts = 200; /// the number of triangles to render on a side (square terrain mesh)
+    const int _numOfVerts = 500; /// the number of triangles to render on a side (square terrain mesh)
     std::vector<unsigned int> indices; /// indices vector
     std::vector<vec3> vpoint; /// vertex point vector
 public:
@@ -96,8 +96,8 @@ public:
         _pid = opengp::load_shaders("Quad/vshader.glsl", "Quad/fshader.glsl");
         if(!_pid) exit(EXIT_FAILURE);
         glUseProgram(_pid);
-        //RGBImage fBm = makeHybridFBM(perlin);
-        RGBImage fBm = makeFBM(perlin);
+        RGBImage fBm = makeHybridFBM(perlin);
+        //RGBImage fBm = makeFBM(perlin);
         ///--- Load texture
         loadTextureRGB32F(fBm.data(), fBm.rows(), fBm.cols());
     }
@@ -148,41 +148,63 @@ public:
 private:
     ///--- Hybrid FBM calculator
     RGBImage makeHybridFBM(RGBImage perlin){
-        double H = 0.25;
+        double H = 1;
         double offset = 0.7;
         double lacunarity = 2;
         double frequency;
-        vec3 value;
-        double signal;
+        vec3 result;
+        vec3 signal;
         double weight;
-        int first = 1;
-        int MAX_OCTAVES;
-        double result;
+        bool first = true;
+        int MAX_OCTAVES = 8;
+        //double result;
         double expArray[MAX_OCTAVES];
         RGBImage fbm(perlin.rows(), perlin.cols());
         for(int i = 0; i < perlin.rows(); i++){
             for(int j = 0; j< perlin.cols(); j++){
                 int x = i;
                 int y = j;
-                value = vec3(0.0,0.0,0.0);
+                result = vec3(0.0,0.0,0.0);
+
                 if(first){
-                    frequency = 2;
+                    frequency = 1;
                     for(int k = 0; k < MAX_OCTAVES; k++){
                         expArray[k] = pow(frequency, -H);
                         frequency *= lacunarity;
                     }
-                    first = 0;
+                    first = false;
                 }
-                value += perlin(x%perlin.rows(),y%perlin.cols());
-                value(0) += offset;
-                value(1) += offset;
-                value(2) += offset;
-                value *= expArray[0];
+                result += perlin(x%perlin.rows(),y%perlin.cols());
+                result(0) += offset;
+                result(1) += offset;
+                result(2) += offset;
+                result *= expArray[0];
+                x *= lacunarity;
+                y *= lacunarity;
+                weight = result(0);
                 for(int l = 0; l < MAX_OCTAVES; l++){
+                    if(weight > 1.0)
+                        weight = 1.0;
+                    signal += perlin(x%perlin.rows(),y%perlin.cols());
+                    signal(0) += offset;
+                    signal(1) += offset;
+                    signal(2) += offset;
+                    signal *= expArray[l];
+                    result += weight*signal;
 
+                    weight *= signal(1);
+
+                    x *= lacunarity;
+                    y *= lacunarity;
                 }
+                float maxAmp = 0;
+                for(int k = 0; k<MAX_OCTAVES; k++){
+                    maxAmp += expArray[k];
+                }
+                fbm(i,j) = result*maxAmp;
             }
         }
+        return fbm;
     }
 
     ///--- FBM calculator
